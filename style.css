@@ -1,0 +1,506 @@
+html{
+  scroll-behavior: smooth;
+}
+body {
+    background-color: #161616;
+}
+
+nav {
+    position: fixed;
+    background: #a0a0a015; /* I found this color of blur to work for me better*/
+  -webkit-backdrop-filter: blur(15px); /* Add this line first, it fixes blur for Safari*/
+  backdrop-filter: blur(15px); 
+    height: 9vh;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 15px;
+    width: 90vw;
+    margin-left: 4vw;
+    top: 4vmin;
+    z-index: 9;
+    
+  
+    
+}
+
+.sitelogo {
+   margin-left: -15px;
+    margin-top: 15px;
+    display: inline;
+}
+.jeemainlogo{
+    margin-right: 23px
+}
+
+.jeebooks{
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  font-family: "El Messiri", system-ui;
+  transition: color 0.3s ease-in-out;
+  position: relative;
+  text-align: center;
+  right: 20px;
+
+
+
+}
+
+.jeebooks:hover::after{
+  width: 76%;
+}
+
+.jeebooks::after{
+  content: "";
+  position: absolute;
+  left: 38px;
+  bottom: 21px;
+  width: 0;
+  height: 2px; /* Adjust the thickness of the underline */
+  background-color: #00ff00; /* Color of the underline */
+  transition: width 0.3s ease-in-out;
+}
+.jeebooks>img{
+  padding-right: 15px;
+
+  
+}
+.heading{
+    color: rgb(255, 255, 255);
+    text-align: center;
+    font-family: "Elsie Swash Caps", serif;
+    font-weight: 550;
+    font-style: normal;
+    font-size: 19vmin;
+    letter-spacing: 2px;
+    position: relative;
+    top: 5vh;
+    
+    
+    
+}
+p{
+    
+    text-align: center;
+    color: #ffffff;
+    font-size: 4vmin;
+    font-family: "El Messiri", system-ui;
+    max-width: 105vmin ;
+    margin:auto ;
+    position: relative;
+    max-height: 10vmin;
+    bottom: 7vh;
+    padding-top: 25px;
+    
+    
+    }
+
+  
+  
+#scrollButton {
+  padding: 10px 10px;
+  border: none;
+  font-size: 13px;
+  color: #fff;
+  border-radius: 7px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: 0.5s;
+  transition-property: box-shadow;
+  display: flex;
+  margin: auto;
+  position: relative;
+  top: 32vh;
+
+}
+
+#scrollButton {
+  background: rgb(0,140,255);
+  box-shadow: 0 0 25px rgb(0,140,255);
+}
+
+#scrollButton:hover {
+  box-shadow: 0 0 5px rgb(0,140,255),
+              0 0 25px rgb(0,140,255),
+              0 0 50px rgb(0,140,255),
+              0 0 100px rgb(0,140,255);
+}
+
+
+.floating-bubble {
+  position: fixed;
+  bottom: 20px; /* Position from the bottom */
+  right: 20px; /* Position from the right */
+
+  
+  overflow: hidden; /* Ensures the image stays within the circle */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow effect */
+  z-index: 1000; /* Ensures it stays on top */
+  cursor: pointer;
+  animation: float 3s ease-in-out infinite; /* Applies the floating animation */
+}
+
+
+
+
+/* Keyframes for floating up and down */
+@keyframes float {
+  0% {
+      transform: translateY(0px);
+  }
+  50% {
+      transform: translateY(-10px); /* Adjust the distance it floats up */
+  }
+  100% {
+      transform: translateY(0px);
+  }
+}
+
+
+
+.marquee-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between the two marquee texts */
+    background-color: #161616; /* Background color */
+    border-top: 2px solid grey;  /* Top border */
+    border-bottom: 2px solid grey;  /* Bottom border */
+    position: relative;
+    top: 40vh;
+  }
+  
+  /* Border between marquees */
+  .border-between {
+    height: 2px;
+    background-color: grey;
+  }
+  
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  
+  .marquee span {
+    display: inline-block;
+    font-size: 80px; /* Increased font size */
+    padding-right: 100px; /* Space between repeated elements */
+    animation: marquee 15s linear infinite;
+    transition: color 0.3s ease;
+  }
+  
+  .outlined-text {
+    color: transparent;
+    -webkit-text-stroke: 2px #888;
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 3px; /* Increased stroke width for larger text */
+  }
+  
+  .filled-text {
+    color: #888;
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 3px;
+  }
+  
+  /* Hover effect: Lime Green */
+  .marquee span:hover {
+    color: #1eff00;
+    -webkit-text-stroke: 0; /* Remove outline for outlined text on hover */
+  }
+  
+  /* Right to Left marquee */
+  .marquee-1 span {
+    animation: marquee-right-to-left 15s linear infinite;
+  }
+  
+  @keyframes marquee-right-to-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  
+  /* Left to Right marquee */
+  .marquee-2 span {
+    animation: marquee-left-to-right 15s linear infinite;
+  }
+  
+  @keyframes marquee-left-to-right {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+/* Container for the cards */
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+  position: relative;
+  top: 55vh;
+}
+
+/* Glass card base styles */
+.glass-card {
+  position: relative;
+  width: 250px;
+  height: 350px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  overflow: hidden;
+  transition: box-shadow 0.4s ease;
+}
+
+.orange-theme:hover {
+  box-shadow: 0 4px 30px rgba(255, 165, 0, 0.7);
+}
+
+.white-theme:hover {
+  box-shadow: 0 4px 30px rgba(255, 255, 255, 0.7);
+}
+
+.green-theme:hover {
+  box-shadow: 0 4px 30px rgba(0, 255, 0, 0.8);
+}
+
+.glass-title {
+  font-size: 28px;
+  color: white;
+  text-align: center;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 45PX;
+  z-index: 2;
+  margin-top: 10px;
+}
+
+/* Bubble animation for each theme */
+.bubble {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  filter: blur(10px);
+}
+
+.orange-theme .bubble {
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.8), rgba(255, 165, 0, 0.1));
+  animation: orangeMotion 6s infinite ease-in-out;
+}
+
+.white-theme .bubble {
+  background: radial-gradient(circle, #ffffffcc, rgba(255, 255, 255, 0.1));
+  animation: whiteMotion 8s infinite ease-in-out;
+}
+
+.green-theme .bubble {
+  background: radial-gradient(circle, rgba(0, 255, 0, 0.8), rgba(0, 255, 0, 0.1));
+  animation: greenMotion 10s infinite ease-in-out;
+}
+
+/* Button hover effect */
+.glass-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+.glass-button:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Motion keyframes */
+@keyframes orangeMotion {
+  0% {
+    transform: translate(-20%, -30%);
+  }
+  25% {
+    transform: translate(20%, 30%);
+  }
+  50% {
+    transform: translate(-10%, 20%);
+  }
+  75% {
+    transform: translate(10%, -20%);
+  }
+  100% {
+    transform: translate(-20%, -30%);
+  }
+}
+
+@keyframes whiteMotion {
+  0% {
+    transform: translate(20%, 10%);
+  }
+  25% {
+    transform: translate(-10%, -20%);
+  }
+  50% {
+    transform: translate(30%, 40%);
+  }
+  75% {
+    transform: translate(-30%, -40%);
+  }
+  100% {
+    transform: translate(20%, 10%);
+  }
+}
+
+@keyframes greenMotion {
+  0% {
+    transform: translate(30%, -30%);
+  }
+  25% {
+    transform: translate(-20%, 20%);
+  }
+  50% {
+    transform: translate(15%, -10%);
+  }
+  75% {
+    transform: translate(-15%, 30%);
+  }
+  100% {
+    transform: translate(30%, -30%);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 778px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .glass-card {
+    margin-bottom: 20px;
+  }
+
+  .heading{
+    color: rgb(255, 255, 255);
+    text-align: center;
+    font-family: "Elsie Swash Caps", serif;
+    font-weight: 550;
+    font-style: normal;
+    font-size: 85px;
+    letter-spacing: 2px;
+    position: relative;
+    top: 15vh;
+}
+
+p{
+    
+  text-align: center;
+  color: #ffffff;
+  font-size: 20px;
+  font-family: "El Messiri", system-ui;
+  max-width: 105vmin ;
+  margin:auto ;
+  position: relative;
+  max-height: 10vmin;
+  bottom: 5vh;
+  top: 12vh;
+  
+  
+  }
+
+
+
+#scrollButton {
+padding: 10px 10px;
+border: none;
+font-size: 13px;
+color: #fff;
+border-radius: 7px;
+letter-spacing: 4px;
+font-weight: 700;
+text-transform: uppercase;
+transition: 0.5s;
+transition-property: box-shadow;
+display: flex;
+margin: auto;
+position: relative;
+top: 55vh;
+
+}
+
+.marquee-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between the two marquee texts */
+  background-color: #161616; /* Background color */
+  border-top: 2px solid grey;  /* Top border */
+  border-bottom: 2px solid grey;  /* Bottom border */
+  position: relative;
+  top: 65vh;
+}
+.container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+  position: relative;
+  top: 75vh;
+}
+.jeebooks{
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  font-family: "El Messiri", system-ui;
+  transition: color 0.3s ease-in-out;
+  position: relative;
+  font-size: 12px;
+  right: 24.5px;
+
+}
+.jeebooks>img{
+  padding: 10px;
+  width: 13px;
+  
+}
+.jeebooks:hover::after{
+  width: 0%;
+}
+
+.jeebooks::after{
+  content: "";
+  position: absolute;
+  left: 31px;
+  bottom: 15px;
+  width: 0;
+  height: 2px; /* Adjust the thickness of the underline */
+  background-color: #00ff00; /* Color of the underline */
+  transition: width 0.3s ease-in-out;
+}
+}
+
+
