@@ -291,3 +291,13 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #45b74c; /* Darker green on hover */
 }
+
+marquee {
+  color: #32f895; /* Text color */
+  font-size: 24px; /* Font size */
+  font-family: "El Messiri", system-ui; /* Font family */
+  background-color: rgba(6, 6, 6, 0.5); /* Background color with transparency */
+  padding: 10px; /* Padding around the text */
+  border-radius: 10px; /* Rounded corners */
+   box-shadow: 0 1px 10px rgba(126, 126, 126, 0.3); /* Shadow effect */
+}
