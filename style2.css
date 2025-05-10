@@ -121,6 +121,7 @@ nav {
 }
 
 .grid-item {
+  position: relative;
   background-color: grey;
   text-align: center;
   align-items: center;
@@ -254,8 +255,10 @@ form {
   align-items: center;
   margin: auto auto;
   margin-top: 80px;
-  width: 80%; /* Adjust width as needed */
-  max-width: 600px; /* Maximum width for larger screens */
+  width: 80%;
+  /* Adjust width as needed */
+  max-width: 600px;
+  /* Maximum width for larger screens */
   border: 1px solid rgba(131, 131, 131, 0.473);
   border-radius: 20px;
   padding: 20px;
@@ -273,11 +276,13 @@ textarea {
 }
 
 textarea {
-  height: 100px; /* Adjust height as needed */
+  height: 100px;
+  /* Adjust height as needed */
 }
 
 button[type="submit"] {
-  background-color: #4fc74f; /* Green background */
+  background-color: #4fc74f;
+  /* Green background */
   color: white;
   padding: 10px 20px;
   border: none;
@@ -289,15 +294,71 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #45b74c; /* Darker green on hover */
+  background-color: #45b74c;
+  /* Darker green on hover */
 }
 
 marquee {
-  color: #32f895; /* Text color */
-  font-size: 24px; /* Font size */
-  font-family: "El Messiri", system-ui; /* Font family */
-  background-color: rgba(6, 6, 6, 0.5); /* Background color with transparency */
-  padding: 10px; /* Padding around the text */
-  border-radius: 10px; /* Rounded corners */
-   box-shadow: 0 1px 10px rgba(126, 126, 126, 0.3); /* Shadow effect */
+  color: #32f895;
+  /* Text color */
+  font-size: 24px;
+  /* Font size */
+  font-family: "El Messiri", system-ui;
+  /* Font family */
+  background-color: rgba(6, 6, 6, 0.5);
+  /* Background color with transparency */
+  padding: 10px;
+  /* Padding around the text */
+  border-radius: 10px;
+  /* Rounded corners */
+  box-shadow: 0 1px 10px rgba(126, 126, 126, 0.3);
+  /* Shadow effect */
+}
+
+.badge {
+  display: inline-block;
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  color: white;
+  padding: 8px;
+  font-size: 19px;
+  background-color: red;
+  border-radius: 50%;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  animation: sparkle 0.5s infinite;
+
+}
+
+@keyframes sparkle {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.large-file-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: blue;
+  color: white;
+  padding: 5px;
+  font-size: 18px;
+  border-radius: 3px;
+  z-index: 10;
+
 }
