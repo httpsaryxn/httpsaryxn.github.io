@@ -1,99 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&family=Elsie+Swash+Caps:wght@400;900&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&family=Elsie+Swash+Caps:wght@400;900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
     body {
-    background-color: #161616;
-}
-nav {
-  position: fixed;
-  background: #a0a0a015;
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
-  height: 9vh;
-  justify-content: center;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 15px;
-  width: 90vw;
-  margin-left: 4vw;
-  top: 4vmin;
-  z-index: 9;
-}
-.sitelogo {
-  margin-left: -15px;
-  margin-top: 15px;
-  display: inline;
-}
-.jeemainlogo {
-  margin-right: 23px
-}
+      background-color: #161616;
+    }
 
-.jeequiz {
-  color: #fff;
-  text-decoration: none;
-  display: flex;
-  font-family: "El Messiri", system-ui;
-  transition: color 0.3s ease-in-out;
-  position: relative;
-  text-align: center;
-  right: 20px;
-}
+    nav {
+      position: fixed;
+      background: #a0a0a015;
+      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(15px);
+      height: 9vh;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 15px;
+      width: 90vw;
+      margin-left: 4vw;
+      top: 4vmin;
+      z-index: 9;
+    }
 
-.jeequiz:hover::after {
-  width: 76%;
-}
+    .sitelogo {
+      margin-left: -15px;
+      margin-top: 15px;
+      display: inline;
+    }
 
-.jeequiz::after {
-  content: "";
-  position: absolute;
-  left: 38px;
-  bottom: 21px;
-  width: 0;
-  height: 2px;
-  background-color: #00ff00;
-  transition: width 0.3s ease-in-out;
-}
+    .jeemainlogo {
+      margin-right: 23px
+    }
 
-.jeequiz>img {
-  padding-right: 15px;
-}
-#welcome-message{
-  font-family: "El Messiri", system-ui;
-  margin-top: 150px;
-  margin-left: 78px;
-  color: aliceblue;
-  font-size: 40px;
-}
+    .jeequiz {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      font-family: "El Messiri", system-ui;
+      transition: color 0.3s ease-in-out;
+      position: relative;
+      text-align: center;
+      right: 20px;
+    }
 
-@media (max-width: 768px) {
-  .jeequiz {
-  color: #fff;
-  text-decoration: none;
-  display: flex;
-  font-family: "El Messiri", system-ui;
-  font-size: 13px;
-  transition: color 0.3s ease-in-out;
-  position: relative;
-  text-align: center;
-  right: 20px;
-  padding:6px;
+    .jeequiz:hover::after {
+      width: 76%;
+    }
 
-} 
-.jeequiz:hover::after {
- display: none;
-} 
-  .nav-links {
+    .jeequiz::after {
+      content: "";
+      position: absolute;
+      left: 38px;
+      bottom: 21px;
+      width: 0;
+      height: 2px;
+      background-color: #00ff00;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .jeequiz>img {
+      padding-right: 15px;
+    }
+
+    #welcome-container {
+      display: flex;
+      margin-top: 150px;
+      margin-left: 78px;
+    }
+
+    #welcome-message {
+      font-family: "El Messiri", system-ui;
+      color: rgb(249, 252, 255);
+      font-size: 40px;
+      margin-right: 20px;
+    }
+
+    @media (max-width: 768px) {
+      body{
+        overflow: hidden;;
+      }
+      .jeequiz {
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        font-family: "El Messiri", system-ui;
+        font-size: 13px;
+        transition: color 0.3s ease-in-out;
+        position: relative;
+        text-align: center;
+        right: 20px;
+        padding: 6px;
+      }
+
+      .jeequiz:hover::after {
+        display: none;
+      }
+
+      .nav-links {
         display: none;
         flex-direction: column;
         width: 100%;
@@ -101,71 +115,97 @@ nav {
         top: 9vh;
         left: 0;
         background: #a0a0a015;
-
         border-radius: 0 0 10px 10px;
-    }
+      }
 
-    .nav-links a {
+      .nav-links a {
         padding: 100px;
         text-align: center;
         font-size: 6px;
-         /* Reduced font size for mobile */
-    }
+        /* Reduced font size for mobile */
+      }
 
-    .jeequiz img {
-        display: none; /* Hide the JEE Quiz image on mobile */
-    }
+      .jeequiz img {
+        display: none;
+        /* Hide the JEE Quiz image on mobile */
+      }
 
-}
-</style>
+      #welcome-container {
+        display: flex;
+        flex-direction: row; /* Keep items in a row */
+        margin-top: 140px; /* Adjust margin as needed */
+      }
+
+      #welcome-message {
+        font-family: "El Messiri", system-ui;
+        color: rgb(249, 252, 255);
+        font-size: 24px; /* Adjust font size for mobile */
+        margin-right: 10px;
+        margin-left: -60px; /* Space between message and player */
+      }
+
+      dotlottie-player {
+        width: 150px; /* Adjust size for mobile */
+        height: 150px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    
-    <nav>
-        <a href="dashboard.html">
-            <img src="logo.png" alt="" width="140" class="sitelogo">
-        </a>
 
-        <a href="jeequiz.html" class="jeequiz">
-            <img src="open-external-link-icon.svg" width="25px">
-            <H2>JEE QUIZ</H2>
-        </a>
-        <a href="index.html" class="jeequiz">
-            <img src="open-external-link-icon.svg" width="25px">
-            <H2>JEE BOOKS</H2>
-        </a>
+  <nav>
+    <a href="dashboard.html">
+      <img src="logo.png" alt="" width="140" class="sitelogo">
+    </a>
 
-        <a href="dashboard.html">
-            <img src="jee-main-150x150.png" alt="" width="50" class="jeemainlogo">
-        </a>
-    </nav>
-    
+    <a href="jeequiz.html" class="jeequiz">
+      <img src="open-external-link-icon.svg" width="25px">
+      <H2>JEE QUIZ</H2>
+    </a>
+    <a href="index.html" class="jeequiz">
+      <img src="open-external-link-icon.svg" width="25px">
+      <H2>JEE BOOKS</H2>
+    </a>
+
+    <a href="dashboard.html">
+      <img src="jee-main-150x150.png" alt="" width="50" class="jeemainlogo">
+    </a>
+  </nav>
+
+  <div id="welcome-container">
     <h1 id="welcome-message"></h1>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
-            authDomain: "practiso-9b3dd.firebaseapp.com",
-            projectId: "practiso-9b3dd",
-            storageBucket: "practiso-9b3dd.firebasestorage.app",
-            messagingSenderId: "263842850217",
-            appId: "1:263842850217:web:129de6a752bd8831b150b8",
-            measurementId: "G-CG44V5WG0G"
-        };
+    <dotlottie-player src="https://lottie.host/8c4740ee-df89-4afb-8a5b-4e6d11edb76f/dGDzygdJjP.lottie"
+      background="transparent" speed="1" style="width: 150px; height: 150px;margin-top:-25px" loop autoplay ></dotlottie-player>
+  </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+      authDomain: "practiso-9b3dd.firebaseapp.com",
+      projectId: "practiso-9b3dd",
+      storageBucket: "practiso-9b3dd.firebasestorage.app",
+      messagingSenderId: "263842850217",
+      appId: "1:263842850217:web:129de6a752bd8831b150b8",
+      measurementId: "G-CG44V5WG0G"
+    };
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                const email = user.email;
-                document.getElementById('welcome-message').textContent = `WELCOME, ${email}`;
-            } else {
-                window.location.href = "/login.html";
-            }
-        });
-    </script>
-    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        const email = user.email;
+        document.getElementById('welcome-message').textContent = `WELCOME, ${email}`;
+      } else {
+        window.location.href = "/login.html";
+      }
+    });
+  </script>
+
 </body>
+
 </html>
