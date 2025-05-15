@@ -286,7 +286,11 @@ function signInWithGoogle() {
             window.location.href = "/dashboard.html";
         })
         .catch((error) => {
-            alert(getFriendlyError(error));
+            if (error.code === 'auth/popup-closed-by-user') {
+                alert("You closed the popup before completing sign-in. Please try again.");
+            } else {
+                alert(getFriendlyError(error));
+            }
         });
 }
 
