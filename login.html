@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            background-color: #161616;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .spline-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 360px;
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .tabs button {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgb(229, 224, 224);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tabs button.active {
+            color: rgb(229, 224, 224);
+            border-color: #4CAF50;
+        }
+
+        .form {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .form input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            outline: none;
+            font-size: 1rem;
+            margin: 10px -10px;
+            background-color: #67676758;
+            color: #ffffff;
+        }
+
+        .form input::placeholder {
+            color: #ffffffa4;
+        }
+
+        .form button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #4CAF50;
+            border: 1px solid rgb(107, 106, 106);
+            color: white;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 19px;
+        }
+
+        .form button:hover {
+            background: #45a049;
+        }
+
+        .google-btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .google-btn {
+            width: 100%;
+            max-width: 250px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #000000;
+            background: #ffffff !important;
+            color: #333333 !important;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .google-btn:hover {
+            background: #f5f5f5 !important;
+        }
+
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .reset-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .reset-link a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .reset-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+<body>
+    <div class="spline-bg">
+        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.92/build/spline-viewer.js"></script>
+        <spline-viewer url="https://prod.spline.design/OAGZGbWvpfCuu8Ue/scene.splinecode"></spline-viewer>
+    </div>
+    
+    <div class="auth-container">
+        <div class="tabs">
+            <button id="login-tab" class="active" onclick="showForm('login')">Login</button>
+            <button id="signup-tab" onclick="showForm('signup')">Sign Up</button>
+        </div>
+
+        <div id="login-form" class="form active">
+            <form>
+                <div class="google-btn-container">
+                    <button type="button" id="googleLoginBtn" class="google-btn">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+                        <span>Continue with Google</span>
+                    </button>
+                </div>
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="button" onclick="handleEmailLogin()">Login</button>
+                <div class="reset-link">
+                    <a href="#">Forgot password?</a>
+                </div>
+            </form>
+        </div>
+
+        <div id="signup-form" class="form">
+            <form>
+                <div class="google-btn-container">
+                    <button type="button" id="googleSignupBtn" class="google-btn">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+                        <span>Continue with Google</span>
+                    </button>
+                </div>
+                <input type="email" id="signupEmail" placeholder="Email" required>
+                <input type="password" id="signupPassword" placeholder="Password" required minlength="6">
+                <button type="button" onclick="handleEmailSignup()">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Core -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+  authDomain: "practiso-9b3dd.firebaseapp.com",
+  projectId: "practiso-9b3dd",
+  storageBucket: "practiso-9b3dd.firebasestorage.app",
+  messagingSenderId: "263842850217",
+  appId: "1:263842850217:web:129de6a752bd8831b150b8",
+  measurementId: "G-CG44V5WG0G"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function showForm(form) {
+            ['login', 'signup'].forEach(f => {
+                document.getElementById(`${f}-form`).classList.remove('active');
+            });
+            document.getElementById(`${form}-form`).classList.add('active');
+            document.getElementById('login-tab').classList.toggle('active', form === 'login');
+            document.getElementById('signup-tab').classList.toggle('active', form === 'signup');
+        }
+
+        function handleEmailSignup() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    return userCredential.user.sendEmailVerification().then(() => {
+                        alert("Verification email sent! Please check your inbox.");
+                        showForm('login');
+                    });
+                })
+                .catch((error) => {
+                    alert(getFriendlyError(error));
+                });
+        }
+
+        function handleEmailLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email) {
+        alert("Please enter your email first.");
+        return;
+    }
+
+    if (!password) {
+        alert("Please enter your password.");
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            return userCredential.user.reload().then(() => userCredential.user);
+        })
+        .then((user) => {
+            if (!user.emailVerified) {
+                alert("Please verify your email first.");
+                auth.signOut();
+                throw new Error("Email not verified");
+            }
+            window.location.href = "/dashboard";
+        })
+        .catch((error) => {
+            if (error.message !== "Email not verified") {
+                alert(getFriendlyError(error));
+            }
+        });
+}
+
+
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => {
+                    window.location.href = "/dashboard.html";
+                })
+                .catch((error) => {
+                    alert(getFriendlyError(error));
+                });
+        }
+
+        document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
+        document.getElementById('googleSignupBtn').addEventListener('click', signInWithGoogle);
+
+        function getFriendlyError(error) {
+            switch (error.code) {
+                case 'auth/email-already-in-use': return 'Email is already registered.';
+                case 'auth/user-not-found': return 'No account found with this email.';
+                case 'auth/wrong-password': return 'Incorrect password.';
+                case 'auth/invalid-email': return 'Invalid email format.';
+                default: return error.message;
+            }
+        }
+    </script>
+</body>
+</html>
