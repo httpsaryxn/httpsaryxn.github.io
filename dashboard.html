@@ -86,10 +86,86 @@
       margin-right: 20px;
     }
 
+    #new-sections-container {
+      display: flex;
+      flex-direction: row;
+      height: 85vh;
+      justify-content: space-between;
+      margin-top: 50px;
+      padding: 50px;
+      
+      
+    }
+
+    #section1 {
+      flex: 1;
+      font-family: "El Messiri", system-ui;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #282828;
+      color: #fff;
+      margin: 10px;
+      border-radius: 10px;
+      font-size:25px;
+    }
+
+    #section2 {
+      flex: 1;
+      font-family: "El Messiri", system-ui;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #282828;
+      color: #fff;
+      margin: 10px;
+      border-radius: 10px;
+      font-size:25px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 70px;
+      height: auto;
+      margin-left: 25px;
+      margin-top: 10px;
+    }
+
+    .text-container {
+      flex: 1;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .action-button {
+      margin-top: -10px;
+      padding: 10px 15px;
+      background-color: #00ff00;
+      border: none;
+      border-radius: 5px;
+      color: #000;
+      cursor: pointer;
+      margin-right: 40px;
+    }
+
+    .action-button:hover {
+      background-color: #00cc00;
+    }
+
+    .separator {
+      border: none;
+      border-top: 1.5px solid #444;
+      margin: 10px 0;
+    }
+
     @media (max-width: 768px) {
-      body{
-        overflow: hidden;;
+      body {
+        overflow-x: hidden;
       }
+
       .jeequiz {
         color: #fff;
         text-decoration: none;
@@ -122,31 +198,54 @@
         padding: 100px;
         text-align: center;
         font-size: 6px;
-        /* Reduced font size for mobile */
       }
 
       .jeequiz img {
         display: none;
-        /* Hide the JEE Quiz image on mobile */
       }
 
       #welcome-container {
         display: flex;
-        flex-direction: row; /* Keep items in a row */
-        margin-top: 140px; /* Adjust margin as needed */
+        flex-direction: row;
+        margin-top: 140px;
       }
 
       #welcome-message {
         font-family: "El Messiri", system-ui;
         color: rgb(249, 252, 255);
-        font-size: 24px; /* Adjust font size for mobile */
+        font-size: 24px;
         margin-right: 10px;
-        margin-left: -60px; /* Space between message and player */
+        margin-left: -60px;
       }
 
       dotlottie-player {
-        width: 150px; /* Adjust size for mobile */
+        width: 150px;
         height: 150px;
+      }
+
+      #new-sections-container {
+        flex-direction: column;
+        padding: 20px;
+        margin-top: 5px;
+      }
+      #section1{
+        font-size: 20px;
+      }
+
+      .row {
+        /* flex-direction: column; */
+        align-items: flex-start;
+        padding: 0px;
+      }
+
+      .logo {
+        width: 70px;
+        margin-top: 23px;
+        margin-left: 15px;
+        
+      }
+      .action-button{
+        margin-right: 30px;
       }
     }
   </style>
@@ -176,7 +275,47 @@
   <div id="welcome-container">
     <h1 id="welcome-message"></h1>
     <dotlottie-player src="https://lottie.host/8c4740ee-df89-4afb-8a5b-4e6d11edb76f/dGDzygdJjP.lottie"
-      background="transparent" speed="1" style="width: 150px; height: 150px;margin-top:-25px" loop autoplay ></dotlottie-player>
+      background="transparent" speed="1" style="width: 150px; height: 150px;margin-top:-25px" loop
+      autoplay></dotlottie-player>
+  </div>
+
+  <!-- New sections container -->
+  <div id="new-sections-container">
+    <section id="section1">
+      <h2>Exams</h2>
+      
+      <div class="row">
+        <img src="jee-main-150x150.png" alt="Logo 1" class="logo">
+        <div class="text-container">
+          <p> MAINS MOCK TEST</p>
+          <button class="action-button">START MOCK...</button>
+        </div>
+      </div>
+      
+      <hr class="separator">
+      
+      <div class="row">
+        <img src="jeeadv.webp" alt="Logo 2" class="logo">
+        <div class="text-container">
+          <p>JEE ADV MOCK TEST</p>
+          <button class="action-button">COMING SOON</button>
+        </div>
+      </div>
+      
+      <hr class="separator">
+      
+      <div class="row">
+        <img src="MHT-CET_logo.png" alt="Logo 3" class="logo">
+        <div class="text-container">
+          <p>MHTCET  MOCK TEST</p>
+          <button class="action-button">COMING SOON</button>
+        </div>
+      </div>
+    </section>
+    <section id="section2">
+      <h2>Your Tests</h2>
+      <p></p>
+    </section>
   </div>
 
   <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
@@ -205,6 +344,9 @@
       }
     });
   </script>
+
+
+  </div>
 
 </body>
 
