@@ -279,20 +279,30 @@
 }
 
 
-function signInWithGoogle() {
+async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then(() => {
-            window.location.href = "/dashboard.html";
-        })
-        .catch((error) => {
-            if (error.code === 'auth/popup-closed-by-user') {
-                alert("You closed the popup before completing sign-in. Please try again.");
-            } else {
-                alert(getFriendlyError(error));
-            }
-        });
+    try {
+        await auth.signInWithPopup(provider);
+        window.location.href = "/dashboard.html";
+    } catch (error) {
+        if (error.code === 'auth/popup-closed-by-user') {
+            // Silent fail, as user or browser closed the popup
+            return;
+        } else if (error.code === 'auth/cancelled-popup-request') {
+            // Silent fail, another popup was already opened
+            return;
+        } else if (error.code === 'auth/popup-blocked') {
+            // Silent fail, browser blocked the popup
+            return;
+        } else {
+            // For all other errors, optionally log or handle them
+            console.error(error);
+            alert(getFriendlyError(error));
+        }
+    }
 }
+
+
 
 
         document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
