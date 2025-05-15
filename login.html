@@ -279,16 +279,17 @@
 }
 
 
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then(() => {
-                    window.location.href = "/dashboard.html";
-                })
-                .catch((error) => {
-                    alert(getFriendlyError(error));
-                });
-        }
+function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(() => {
+            window.location.href = "/dashboard.html";
+        })
+        .catch((error) => {
+            alert(getFriendlyError(error));
+        });
+}
+
 
         document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
         document.getElementById('googleSignupBtn').addEventListener('click', signInWithGoogle);
