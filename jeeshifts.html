@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JEE Shifts</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&family=Elsie+Swash+Caps:wght@400;900&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+
+    <style>
+        body {
+          background-color: #161616;
+          color: #fff;
+          font-family: "El Messiri", system-ui;
+        }
+
+        nav {
+          position: fixed;
+          background: #a0a0a015;
+          -webkit-backdrop-filter: blur(15px);
+          backdrop-filter: blur(15px);
+          height: 9vh;
+          justify-content: center;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-radius: 15px;
+          width: 90vw;
+          margin-left: 4vw;
+          top: 4vmin;
+          z-index: 9;
+        }
+
+        .sitelogo {
+          margin-left: -15px;
+          margin-top: 15px;
+          display: inline;
+        }
+
+        .jeemainlogo {
+          margin-right: 23px;
+        }
+
+        .jeequiz {
+          color: #fff;
+          text-decoration: none;
+          display: flex;
+          font-family: "El Messiri", system-ui;
+          transition: color 0.3s ease-in-out;
+          position: relative;
+          text-align: center;
+          right: 20px;
+        }
+
+        .jeequiz:hover::after {
+          width: 76%;
+        }
+
+        .jeequiz::after {
+          content: "";
+          position: absolute;
+          left: 38px;
+          bottom: 21px;
+          width: 0;
+          height: 2px;
+          background-color: #00ff00;
+          transition: width 0.3s ease-in-out;
+        }
+
+        .jeequiz > img {
+          padding-right: 15px;
+        }
+
+        .box-container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          margin: 20px;
+        }
+
+        .box {
+          background-color: #282828;
+          border-radius: 10px;
+          padding: 20px;
+          margin: 10px;
+          flex: 0 1 calc(50% - 20px);
+          box-sizing: border-box;
+          text-align: center;
+          width: 80%;
+        }
+
+        .box h3 {
+          margin: 0;
+          font-size: 20px;
+        }
+        .box h5 {
+          color: rgb(238, 185, 13);
+          font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode",
+            Geneva, Verdana, sans-serif;
+        }
+
+        .action-button {
+          margin-top: 10px;
+          padding: 10px 15px;
+          background-color: #00ff00;
+          border: none;
+          border-radius: 5px;
+          color: #000000;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 600;
+        }
+
+        .action-button:hover {
+          background-color: #00cc00;
+        }
+
+        h1 {
+          margin-left: 35px;
+          margin-top: 200px;
+          font-size: 48px;
+        }
+
+        @media (max-width: 768px) {
+          body {
+            overflow-x: hidden;
+          }
+
+          .jeequiz {
+            font-size: 13px;
+            padding: 6px;
+          }
+
+          .jeequiz:hover::after {
+            display: none;
+          }
+
+          .nav-links {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            position: absolute;
+            top: 9vh;
+            left: 0;
+            background: #a0a0a015;
+            border-radius: 0 0 10px 10px;
+          }
+
+          .nav-links a {
+            padding: 100px;
+            text-align: center;
+            font-size: 6px;
+          }
+
+          .jeequiz img {
+            display: none;
+          }
+
+          .box {
+            flex: 0 1 100%;
+          }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="dashboard.html">
+            <img src="logo.png" alt="" width="140" class="sitelogo" />
+        </a>
+
+        <a href="jeequiz.html" class="jeequiz">
+            <img src="open-external-link-icon.svg" width="25px" />
+            <h2>JEE QUIZ</h2>
+        </a>
+        <a href="index.html" class="jeequiz">
+            <img src="open-external-link-icon.svg" width="25px" />
+            <h2>JEE BOOKS</h2>
+        </a>
+
+        <a href="dashboard.html">
+            <img src="jee-main-150x150.png" alt="" width="50" class="jeemainlogo" />
+        </a>
+    </nav>
+
+    <h1>JEE 2025 APRIL</h1>
+
+    <div class="box-container">
+      <div class="box">
+        <h3>JEE Main 2025 8th April Evening</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="8-april-evening">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 7th April Evening</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="7-april-evening">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 7th April Morning</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="7-april-morning">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 4th April Evening</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="4-april-evening">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 4th April Morning</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="4-april-morning">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 3rd April Evening</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="3-april-evening">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 3rd April Morning</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="3-april-morning">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 2nd April Evening</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="2-april-evening">Start Mock</button>
+      </div>
+      <div class="box">
+        <h3>JEE Main 2025 2nd April Morning</h3>
+        <h5>Max-Marks : 300 , Duration : 3 hours</h5>
+        <button class="action-button" data-shift="2-april-morning">Start Mock</button>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+        authDomain: "practiso-9b3dd.firebaseapp.com",
+        projectId: "practiso-9b3dd",
+        storageBucket: "practiso-9b3dd.firebasestorage.app",
+        messagingSenderId: "263842850217",
+        appId: "1:263842850217:web:129de6a752bd8831b150b8",
+        measurementId: "G-CG44V5WG0G",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+
+      auth.onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = "/login.html";
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const buttons = document.querySelectorAll(".action-button");
+
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const shiftId = btn.getAttribute("data-shift");
+            if (shiftId) {
+              window.location.href = `instructions.html?shift=${shiftId}`;
+            }
+          });
+        });
+      });
+    </script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Instructions</title>
+  <link rel="stylesheet" href="examui.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #e6eef5;
+      color: #222;
+      padding-bottom: 120px; /* Add enough padding so content is not hidden behind the fixed footer */
+    }
+    .topbar {
+      background: #e6eef5;
+      border-bottom: 2px solid #2d70b6;
+      padding: 18px 24px;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #222;
+    }
+    .instructions-content {
+      background: #fff;
+      padding: 32px 32px 16px 32px;
+      min-height: 400px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .instructions-footer {
+      background: #f2f4f7;
+      padding: 24px 32px;
+      border-top: 1.5px solid #bbb;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 18px;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+    .instructions-footer label {
+      flex: 1;
+      font-size: 16px;
+      font-style: italic;
+      font-weight: 500;
+    }
+    .instructions-footer button {
+      background: #555;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 38px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .instructions-footer button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    .instructions-footer .prev-btn {
+      background: #fff;
+      color: #222;
+      border: 1.5px solid #bbb;
+      font-size: 17px;
+      font-weight: 500;
+      padding: 11px 26px;
+      border-radius: 5px;
+      margin-right: 18px;
+    }
+    .legend-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 24px 0;
+      background: #fff;
+    }
+    .legend-table th, .legend-table td {
+      border: 1px solid #bbb;
+      padding: 8px 12px;
+      font-size: 16px;
+      vertical-align: middle;
+    }
+    .legend-table th {
+      background: #f2f4f7;
+      font-weight: 600;
+      text-align: left;
+    }
+    .legend-icon {
+      width: 32px;
+      height: 32px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+    .legend-number {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      background: #fff;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+    }
+    .instructions-section-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 24px 0 10px 0;
+      color: #2d70b6;
+    }
+    .instructions-content ul, .instructions-content ol {
+      margin-left: 24px;
+    }
+    .instructions-content li {
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+    .instructions-content b {
+      font-weight: 600;
+    }
+    .instructions-content .note {
+      color: #b71c1c;
+      font-style: italic;
+      margin-top: 10px;
+      display: block;
+    }
+    @media (max-width: 900px) {
+      .instructions-content, .instructions-footer { padding: 12px; }
+      .legend-table th, .legend-table td { font-size: 14px; }
+    }
+    .instructions-footer.center-next {
+      justify-content: center;
+    }
+    .next-btn {
+      background: #2d70b6 !important;
+      color: #fff !important;
+      font-size: 20px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 38px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #begin-btn {
+      background: #aaa; /* Default: gray when disabled */
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 38px;
+      cursor: not-allowed;
+      transition: background 0.2s;
+    }
+    #begin-btn.enabled {
+      background: #2d70b6 !important;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      Instructions
+    </header>
+    <div class="instructions-content" id="instructions-content">
+      <!-- Content will be loaded here -->
+    </div>
+    <div class="instructions-footer" id="instructions-footer">
+      <button class="prev-btn" id="prev-btn" style="display:none;">&lt; Previous</button>
+      <button class="next-btn" id="next-btn">Next</button>
+      <label id="agree-label" style="display:none;">
+        <input type="checkbox" id="agree-checkbox" />
+        I have read and understood the instructions. All computer hardware allotted to me are in proper working condition. I declare that I am not in possession of / not wearing / not carrying any prohibited gadget like mobile phone, bluetooth devices etc. / any prohibited material with me into the Examination Hall. I agree that in case of not adhering to the instructions, I shall be liable to be debarred from this Test and/or to disciplinary action, which may include ban from future Tests / Examinations
+      </label>
+      <button id="begin-btn" style="display:none;" disabled>I am ready to begin</button>
+    </div>
+  </div>
+  <script>
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+      authDomain: "practiso-9b3dd.firebaseapp.com",
+      projectId: "practiso-9b3dd",
+      storageBucket: "practiso-9b3dd.appspot.com",
+      messagingSenderId: "263842850217",
+      appId: "1:263842850217:web:129de6a752bd8831b150b8",
+      measurementId: "G-CG44V5WG0G"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Redirect to login if not logged in
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "/login.html";
+      }
+    });
+
+    // Get shift from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const shift = urlParams.get("shift");
+
+    // Content for both pages
+    const generalInstructions = `
+      <div style="text-align:center; font-size:18px; margin-bottom:18px;">
+        Please read the instructions carefully
+      </div>
+      <div class="instructions-section-title">General Instructions:</div>
+      <ul>
+        <li>Total duration of examination is 180 minutes.</li>
+        <li>The clock will be set at the server. The countdown timer in the top right corner of screen will display the remaining time available for you to complete the examination. When the timer reaches zero, the examination will end by itself. You will not be required or be able to submit your examination.</li>
+        <li>The Question Palette displayed on the right side of screen will show the status of each question using one of the following symbols:</li>
+      </ul>
+      <table class="legend-table">
+        <tr>
+          <th style="width:60px;">Symbol</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><img src="answered.png" class="legend-icon" alt="Answered" /></td>
+          <td>You have answered the question.</td>
+        </tr>
+        <tr>
+          <td><img src="notanswered.png" class="legend-icon" alt="Not Answered" /></td>
+          <td>You have not answered the question.</td>
+        </tr>
+        <tr>
+          <td><img src="answeredreview.png" class="legend-icon" alt="Answered & Marked for Review" /></td>
+          <td>The question(s) "Answered and Marked for Review" will be considered for evaluation.</td>
+        </tr>
+        <tr>
+          <td><img src="review.png" class="legend-icon" alt="Marked for Review" /></td>
+          <td>The question(s) "Marked for Review" will <b>not</b> be considered for evaluation. Hence, no marks will be allocated for the same.</td>
+        </tr>
+      </table>
+      <div style="margin-bottom:18px;">
+        The Marked for Review status for a question simply indicates that you would like to look at that question again.<br>
+        You can click on the <b>{'>>'}</b> arrow which appears to the left of question palette to collapse the question palette thereby maximizing the question window. To view the question palette again, you can click on <b>{'<<'}</b> which appears on the right side of question window.
+      </div>
+      <div class="instructions-section-title">Navigating to a Question:</div>
+      <ol>
+        <li>To select your answer, click on the button of one of the options.</li>
+        <li>To deselect your chosen answer, click on the button of the chosen option again or click on the <b>Clear Response</b> button.</li>
+        <li>To change your chosen answer, click on the button of another option.</li>
+        <li>To save your answer, you MUST click on the <b>Save & Next</b> button.</li>
+        <li>To mark the question for review, click on the <b>Mark for Review & Next</b> button.</li>
+      </ol>
+      <div>
+        To change your answer to a question that has already been answered, first select that question for answering and then follow the procedure for answering that type of question.
+      </div>
+      <div class="instructions-section-title">Navigating through sections:</div>
+      <ul>
+        <li>Sections in this question paper are displayed on the top bar of the screen. Questions in a section can be viewed by clicking on the section name. The section you are currently viewing is highlighted.</li>
+        <li>After clicking the Save & Next button on the last question for a section, you will automatically be taken to the first question of the next section.</li>
+        <li>You can shuffle between sections and questions anytime during the examination as per your convenience only during the time stipulated.</li>
+        <li>Candidate can view the corresponding section summary as part of the legend that appears in every section above the question palette.</li>
+      </ul>
+    `;
+
+    const testInstructions = `
+      <div class="instructions-section-title">Test Specific Instructions:</div>
+      <ul>
+        <li>Test includes 2 sections - Section A and B for each of Physics, Chemistry & Math.</li>
+        <li>Section A includes 20 single option correct and Section B includes 5 integer type questions.</li>
+        <li>Marking scheme is +4 for correct answer, 0 for unattempted and -1 for wrong answer.</li>
+        <li>Make sure you click on "Save & Next" button for submitting the answers.</li>
+        <li>For integer type questions, press the answer on keypad, click on tick button, followed by Save & Next. Please fill only integers, and not decimal values.</li>
+        <li>Using the top right button, submit the final test.</li>
+        <li>Once the test ends, you can see test analysis - number of correct, incorrect and unanswered questions along with their solutions.</li>
+      </ul>
+      <div style="margin: 18px 0 0 0;">Good Luck!</div>
+    `;
+
+    // Navigation logic
+    const content = document.getElementById('instructions-content');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const beginBtn = document.getElementById('begin-btn');
+    const agreeCheckbox = document.getElementById('agree-checkbox');
+    const agreeLabel = document.getElementById('agree-label');
+
+    function showPage(page) {
+      if (page === 1) {
+        content.innerHTML = generalInstructions;
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = '';
+        agreeLabel.style.display = 'none';
+        beginBtn.style.display = 'none';
+        document.getElementById('instructions-footer').classList.add('center-next');
+      } else {
+        content.innerHTML = testInstructions;
+        prevBtn.style.display = '';
+        nextBtn.style.display = 'none';
+        agreeLabel.style.display = '';
+        beginBtn.style.display = '';
+        beginBtn.disabled = !agreeCheckbox.checked;
+        document.getElementById('instructions-footer').classList.remove('center-next');
+      }
+      if (page === 2) {
+        if (agreeCheckbox.checked) {
+          beginBtn.classList.add('enabled');
+        } else {
+          beginBtn.classList.remove('enabled');
+        }
+      }
+      window.scrollTo(0, 0);
+    }
+
+    let currentPage = 1;
+    showPage(currentPage);
+
+    nextBtn.onclick = function() {
+      currentPage = 2;
+      showPage(currentPage);
+    };
+    prevBtn.onclick = function() {
+      currentPage = 1;
+      showPage(currentPage);
+    };
+    agreeCheckbox.onchange = function() {
+      beginBtn.disabled = !agreeCheckbox.checked;
+      if (agreeCheckbox.checked) {
+        beginBtn.classList.add('enabled');
+      } else {
+        beginBtn.classList.remove('enabled');
+      }
+    };
+
+    beginBtn.onclick = function() {
+      if (shift) {
+        window.location.href = `examui.html?shift=${encodeURIComponent(shift)}`;
+      } else {
+        alert("Shift not specified!");
+      }
+    };
+  </script>
+</body>
+</html>

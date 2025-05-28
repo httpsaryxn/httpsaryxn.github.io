@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CBT Question Example</title>
+  <link rel="stylesheet" href="examui.css" />
+
+  <!-- Firebase (v8 SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <style>
+    /* Add these styles in the head section */
+    .hamburger-menu {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: #2d70b6;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .hamburger-menu span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background: #fff;
+      margin: 5px 0;
+      transition: 0.3s;
+    }
+
+    .sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger-menu {
+        display: block;
+        position: fixed;
+        top: 1px;
+        right: 15px;
+        transform: none;
+        margin: 0;
+        padding: 8px;
+        z-index: 1001;
+        background: #2d70b6;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        
+      }
+
+      .sidebar {
+        position: fixed;
+        right: -300px;
+        top: 0;
+        height: 100vh;
+        width: 280px;
+        background: #e6eef5;
+        z-index: 999;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+        padding: 10px;
+      }
+
+      .sidebar .user-info {
+        display: none;
+      }
+
+      .sidebar .legend {
+        background: #e6eef5;
+        color: #222;
+        margin-top: 0;
+        font-size: 12px;
+        padding: 10px;
+      }
+
+      .sidebar .legend-row {
+        color: #222;
+        padding: 5px 0;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 25px;
+      }
+
+      .sidebar .legend-icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 25px;
+        height: 25px;
+        flex-shrink: 0;
+      }
+
+      .sidebar .legend-icon {
+        width: 25px;
+        height: 25px;
+        object-fit: contain;
+      }
+
+      .sidebar .legend-count {
+        font-size: 12px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #222;
+        font-weight: bold;
+      }
+
+      .sidebar .legend-row span:last-child {
+        flex: 1;
+        font-size: 11px;
+        line-height: 1.2;
+        padding-right: 5px;
+      }
+
+      /* Ensure all legend icons are visible */
+      .sidebar .legend-row img.legend-icon {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      .sidebar .sidebar-section {
+        background: #e6eef5;
+        color: #222;
+        border-bottom: 2px solid #2d70b6;
+        padding: 8px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .sidebar .palette {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        padding: 5px;
+      }
+
+      .sidebar .palette-num {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
+      }
+
+      .sidebar .palette-num-label {
+        font-size: 12px;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+        right: 0;
+      }
+
+      .main-area {
+        margin-right: 0 !important;
+        width: 100% !important;
+        margin-top: 0px !important;
+        padding-bottom: 60px !important;
+      }
+
+      .question-panel {
+        width: 100% !important;
+        margin-bottom: 15px;
+      }
+
+      .section-tabs {
+        margin-top: 40px;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding: 10px 0;
+      }
+
+      .section-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        flex: 0 0 auto;
+        min-width: 150px;
+        font-size: 14px;
+        padding: 10px 15px;
+        text-align: center;
+      }
+
+      .topbar {
+        padding: 10px 15px;
+        font-size: 16px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        background: #e6eef5;
+        border-bottom: 2px solid #2d70b6;
+        z-index: 1000;
+      }
+
+      .mock-title {
+        display: none;
+      }
+
+      .time-left {
+        color: #222;
+      }
+
+      .time-left b {
+        color: #222;
+      }
+
+      .hamburger-menu.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      .hamburger-menu.active span:nth-child(2) {
+        opacity: 0;
+      }
+      .hamburger-menu.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
+      .hamburger-menu span {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      /* Fixed bottom action bar */
+      .bottom-actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #232323;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+      }
+
+      .action-btn {
+        flex: 1 1 auto;
+        min-width: 90px;
+        max-width: 120px;
+        font-size: 12px;
+        padding: 6px 8px;
+        margin: 0 !important;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Make the submit button more prominent */
+      #submit-btn {
+        background: #dc3545 !important;
+        color: white !important;
+        font-weight: bold;
+        min-width: 100px;
+      }
+
+      /* Adjust ghost buttons */
+      .action-btn.ghost {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+
+      /* Adjust main buttons */
+      .action-btn.main {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- Add hamburger menu button -->
+    <button class="hamburger-menu" id="hamburger-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <span class="mock-title" id="shift-title">Mock Test 1 <span class="info-icon">ⓘ</span></span>
+      <span class="time-left">Time Left: <b>178:49</b></span>
+    </header>
+
+    <!-- Section Tabs -->
+    <nav class="section-tabs" id="section-tabs">
+      <div class="tab selected">Physics Section 1</div>
+      <div class="tab">Physics Section 2</div>
+      <div class="tab">Chemistry Section 1</div>
+      <div class="tab">Chemistry Section 2</div>
+      <div class="tab">Mathematics Section 1</div>
+      <div class="tab">Mathematics Section 2</div>
+    </nav>
+
+    <!-- Main Area -->
+    <main class="main-area">
+      <!-- Question Panel -->
+      <section class="question-panel">
+        <div class="question-type-bar"> Question Type: MSQ </div>
+        <div class="question-content">
+          <div class="question-number">Question No. 1</div>
+          <div class="question-body">Loading question...</div>
+          <div class="options"></div>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="user-info">
+          <span class="user-name">User Name</span>
+        </div>
+        <div class="legend">
+          <div class="legend-row">
+            <span class="legend-icon-container">
+              <img src="answered.png" class="legend-icon" alt="Answered" />
+              <span class="legend-count legend-answered">0</span>
+            </span>
+            <span>Answered</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-icon-container">
+              <img src="notanswered.png" class="legend-icon" alt="Not Answered" />
+              <span class="legend-count legend-notanswered">0</span>
+            </span>
+            <span>Not Answered</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-icon-container">
+              <img src="review.png" class="legend-icon" alt="Marked for Review" />
+              <span class="legend-count legend-review">0</span>
+            </span>
+            <span>Marked for Review</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-icon-container">
+              <img src="answeredreview.png" class="legend-icon" alt="Answered & Marked for Review" />
+              <span class="legend-count legend-answered-review">0</span>
+            </span>
+            <span>Attempted and Marked for Review (Will be considered for evaluation)</span>
+          </div>
+        </div>
+        <div class="sidebar-section" id="sidebar-section">Physics Section 1</div>
+        <div class="palette" id="palette"></div>
+      </aside>
+    </main>
+
+    <!-- Bottom Actions -->
+    <footer class="bottom-actions">
+      <button class="action-btn ghost" id="mark-review">Mark for Review & Next</button>
+      <button class="action-btn ghost" id="clear-response">Clear Response</button>
+      <div style="flex: 1;"></div>
+      <button class="action-btn ghost" id="previous-btn">Previous Question</button>
+      <button class="action-btn main" id="save-next">Save & Next</button>
+      <button class="action-btn main" id="submit-btn">Submit</button>
+    </footer>
+  </div>
+
+  <!-- Firebase Logic -->
+  <script>
+  // Make page fullscreen
+  document.addEventListener("DOMContentLoaded", () => {
+    const docEl = document.documentElement;
+    if (docEl.requestFullscreen) {
+      docEl.requestFullscreen();
+    } else if (docEl.mozRequestFullScreen) {
+      docEl.mozRequestFullScreen();
+    } else if (docEl.webkitRequestFullscreen) {
+      docEl.webkitRequestFullscreen();
+    } else if (docEl.msRequestFullscreen) {
+      docEl.msRequestFullscreen();
+    }
+  });
+
+  // Warn on back or refresh
+  let confirmedLeave = false;
+
+  // Before refresh/back
+  window.addEventListener("beforeunload", function (e) {
+    if (!confirmedLeave) {
+      e.preventDefault();
+      e.returnValue = ""; // Required for most browsers to show warning
+      return "";
+    }
+  });
+
+  // Detect back/refresh and redirect if confirmed
+  window.addEventListener("unload", function () {
+    if (!confirmedLeave) {
+      // Show confirm only when unload is triggered by refresh/back
+      const resubmit = confirm("Are you sure you want to leave the test? You will be redirected to dashboard.");
+      if (resubmit) {
+        confirmedLeave = true;
+        window.location.href = "dashboard.html";
+      }
+    }
+  });
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+      authDomain: "practiso-9b3dd.firebaseapp.com",
+      projectId: "practiso-9b3dd",
+      storageBucket: "practiso-9b3dd.appspot.com",
+      messagingSenderId: "263842850217",
+      appId: "1:263842850217:web:129de6a752bd8831b150b8",
+      measurementId: "G-CG44V5WG0G"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const palette = document.getElementById('palette');
+    const sectionTabs = document.querySelectorAll('.tab');
+    const sidebarSection = document.getElementById('sidebar-section');
+    const userNameSpan = document.querySelector('.user-name');
+
+    let currentSection = { subject: 'physics', section: 'sec-1-mcq' };
+    let questions = [];
+    let currentQuestionNumber = 1;
+    const year = '2025';
+    const month = 'april';
+    const urlParams = new URLSearchParams(window.location.search);
+    const shift = urlParams.get("shift");
+
+    // Enhanced response storage
+    const sectionStates = {};
+    const sectionUserSelections = {};
+    const responseData = {
+      testInfo: {
+        year,
+        month,
+        shift,
+        startTime: new Date().toISOString(),
+        endTime: null,
+        duration: null
+      },
+      sections: {},
+      metadata: {
+        totalQuestions: 0,
+        answeredQuestions: 0,
+        markedForReview: 0,
+        timeSpent: {}
+      }
+    };
+
+    // After defining shift, update the topbar title
+    document.getElementById('shift-title').innerHTML = `${shift ? shift : 'Mock Test'} <span class="info-icon">ⓘ</span>`;
+
+    const questionStates = {};  // e.g. Q1: {visited: true, answered: false, review: false}
+    
+    let timerInterval;
+    let totalSeconds = 60 * 180; // 3 hours in seconds
+    const timeLeftSpan = document.querySelector('.time-left b');
+
+    let userSelections = {}; // key: question number, value: array of selected option indices (for MSQ) or value (for numerical)
+
+    auth.onAuthStateChanged(user => {
+      if (!user) return (window.location.href = "/login.html");
+      userNameSpan.textContent = `WELCOME, ${user.email.toUpperCase()}`;
+
+      sectionTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          sectionTabs.forEach(t => t.classList.remove('selected'));
+          tab.classList.add('selected');
+          const [subjectRaw, sectionRaw] = tab.textContent.trim().split(" Section ");
+          const subjectMap = {
+            Physics: "physics",
+            Chemistry: "chemistry",
+            Mathematics: "maths"
+          };
+          const sectionType = sectionRaw === '1' ? 'mcq' : 'num';
+
+          currentSection = {
+            subject: subjectMap[subjectRaw] || subjectRaw.toLowerCase(),
+            section: `sec-${sectionRaw}-${sectionType}`
+          };
+
+          sidebarSection.innerText = tab.textContent;
+          loadAllQuestions();
+        });
+      });
+
+      sectionTabs[0].click(); // Load initial section
+      startTimer();
+    });
+
+    async function loadAllQuestions() {
+      const { subject, section } = currentSection;
+      try {
+        const snapshot = await db
+          .collection('years').doc(year)
+          .collection(month).doc(shift)
+          .collection('subjects').doc(subject)
+          .collection('sections').doc(section)
+          .collection('questions')
+          .orderBy(firebase.firestore.FieldPath.documentId())
+          .get();
+
+        questions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (!questions.length) {
+          document.querySelector(".question-body").innerText = "No questions found.";
+          palette.innerHTML = '';
+          return;
+        }
+
+        // Initialize section in responseData if not exists
+        const sectionKey = `${subject}-${section}`;
+        if (!responseData.sections[sectionKey]) {
+          responseData.sections[sectionKey] = {
+            subject,
+            section,
+            questions: questions.map((q, index) => ({
+              questionId: q.id,
+              questionNumber: index + 1,
+              response: null,
+              state: 'notanswered',
+              timeSpent: 0,
+              lastVisited: null
+            }))
+          };
+        }
+
+        buildPalette(questions.length);
+        selectQuestion(1);
+      } catch (e) {
+        console.error("Failed to load questions", e);
+      }
+    }
+
+    function buildPalette(total) {
+      palette.innerHTML = '';
+      const isSection2 = currentSection.section.includes('sec-2');
+      const startNumber = isSection2 ? 21 : 1;
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+
+      // Initialize section state if not exists
+      if (!sectionStates[sectionKey]) {
+        sectionStates[sectionKey] = Array(total).fill('notanswered');
+      }
+
+      for (let i = 0; i < total; i++) {
+        const div = document.createElement('div');
+        div.className = 'palette-num';
+        const state = sectionStates[sectionKey][i];
+        setPaletteBoxState(div, state, i + 1);
+
+        div.addEventListener('click', () => {
+          selectQuestion(i + 1);
+          updateLegend();
+        });
+        palette.appendChild(div);
+      }
+      updateLegend();
+    }
+
+    function setPaletteBoxState(div, state, number) {
+      let bg = '';
+      switch(state) {
+        case 'answered':
+          bg = 'answered.png';
+          div.classList.add('answered');
+          div.classList.remove('notanswered', 'review', 'answeredreview');
+          break;
+        case 'notanswered':
+          bg = 'notanswered.png';
+          div.classList.add('notanswered');
+          div.classList.remove('answered', 'review', 'answeredreview');
+          break;
+        case 'review':
+          bg = 'review.png';
+          div.classList.add('review');
+          div.classList.remove('answered', 'notanswered', 'answeredreview');
+          break;
+        case 'answeredreview':
+          bg = 'answeredreview.png';
+          div.classList.add('answered', 'review', 'answeredreview');
+          div.classList.remove('notanswered');
+          break;
+        default:
+          bg = 'notanswered.png';
+          div.classList.add('notanswered');
+          div.classList.remove('answered', 'review', 'answeredreview');
+      }
+      div.style.backgroundImage = `url('${bg}')`;
+      div.style.backgroundSize = 'contain';
+      div.style.backgroundRepeat = 'no-repeat';
+      div.style.backgroundPosition = 'center';
+      div.innerHTML = `<span class="palette-num-label">${number}</span>`;
+    }
+
+    function selectQuestion(num) {
+      currentQuestionNumber = num;
+      document.querySelectorAll('.palette-num').forEach((el, idx) => {
+        el.classList.toggle('selected', idx === num - 1);
+      });
+      loadQuestion(num);
+      updateLegend();
+
+      const saveNextBtn = document.getElementById('save-next');
+      const isMathsSec2 = currentSection.subject === 'mathematics' && currentSection.section === 'sec-2-num';
+      saveNextBtn.style.display = (isMathsSec2 && currentQuestionNumber === questions.length) ? 'none' : '';
+    }
+
+    function convertDropboxUrlToDirect(url) {
+      if (!url) return url;
+      try {
+        const u = new URL(url);
+        if (u.hostname === 'www.dropbox.com') {
+          u.hostname = 'dl.dropboxusercontent.com';
+          u.search = '';
+        }
+        return u.toString();
+      } catch {
+        return url;
+      }
+    }
+
+    function loadQuestion(num) {
+      // Update Question Type Label
+      const typeBar = document.querySelector(".question-type-bar");
+      const isSection2 = currentSection.section.includes('sec-2');
+      typeBar.innerHTML = `
+        <span class="question-type-left">Question Type: ${isSection2 ? 'NUMERICAL' : 'MCQ'}</span>
+        <span class="question-type-right">marks for correct option : +4</span>
+        <span class="question-type-wrong">marks for wrong option : -1</span>
+      `;
+
+      const q = questions[num - 1];
+      if (!q) return;
+
+      const offset = currentSection.section.includes('sec-2') ? 20 : 0;
+      document.querySelector(".question-number").innerText = `Question No. ${offset + num}`;
+
+      const questionBodyEl = document.querySelector(".question-body");
+      const isImg = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(q.question?.trim());
+
+      questionBodyEl.innerHTML = isImg
+        ? `<img src="${q.question}" class="question-image" alt="Question Image">`
+        : q.question || 'Question text missing';
+
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+      if (!sectionUserSelections[sectionKey]) {
+        sectionUserSelections[sectionKey] = {};
+      }
+
+      let optionsHTML = '';
+
+      if (isSection2) {
+        // Section 2 = Numerical Input
+        const savedResponse = sectionUserSelections[sectionKey][num] || '';
+        optionsHTML = `
+          <label>
+            Enter your answer:
+            <input type="number" step="any" class="numerical-input" value="${savedResponse}" />
+          </label>
+        `;
+      } else {
+        // Section 1 = MCQ Options
+        const placeholderText = {
+          a: "Option 1",
+          b: "Option 2",
+          c: "Option 3",
+          d: "Option 4"
+        };
+
+        optionsHTML = ['a', 'b', 'c', 'd'].map(k => {
+          const value = q.options?.[k]?.trim();
+          const directUrl = convertDropboxUrlToDirect(value);
+          const isImg = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(directUrl);
+
+          let content = '';
+          if (isImg) {
+            content = `<img src="${directUrl}" class="option-image" alt="Option ${k.toUpperCase()}">`;
+          } else if (value) {
+            content = value;
+          } else {
+            content = placeholderText[k];
+          }
+
+          return `<label><input type="radio" name="q${num}" class="option-radio"> ${content}</label><br>`;
+        }).join('');
+      }
+
+      document.querySelector(".options").innerHTML = optionsHTML;
+
+      // Add event listener for numerical input
+      if (isSection2) {
+        const numericalInput = document.querySelector('.numerical-input');
+        if (numericalInput) {
+          numericalInput.addEventListener('input', () => {
+            const value = numericalInput.value;
+            if (!sectionUserSelections[sectionKey]) {
+              sectionUserSelections[sectionKey] = {};
+            }
+            sectionUserSelections[sectionKey][num] = value;
+            
+            // Update palette state
+            const paletteBox = document.querySelectorAll('.palette-num')[num - 1];
+            let state = value ? 'answered' : 'notanswered';
+            if (paletteBox.classList.contains('review')) {
+              state = value ? 'answeredreview' : 'review';
+            }
+            sectionStates[sectionKey][num - 1] = state;
+            setPaletteBoxState(paletteBox, state, num);
+            updateLegend();
+            
+            // Update response data
+            updateResponseData(num, value, state);
+          });
+        }
+      } else {
+        // Restore previous selection for MCQ
+        setTimeout(() => {
+          const options = document.querySelectorAll('.option-radio');
+          if (sectionUserSelections[sectionKey][num] !== undefined) {
+            options[sectionUserSelections[sectionKey][num]].checked = true;
+          }
+        }, 0);
+      }
+
+      updateOptionLogic();
+    }
+
+    function updateOptionLogic() {
+      if (currentSection.section.includes('sec-2')) {
+        return; // Skip for numerical questions as they have their own event listener
+      }
+
+      const options = document.querySelectorAll('.option-radio');
+      const paletteBox = document.querySelectorAll('.palette-num')[currentQuestionNumber - 1];
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+
+      // Restore previous selection if exists
+      if (sectionUserSelections[sectionKey] && sectionUserSelections[sectionKey][currentQuestionNumber] !== undefined) {
+        options[sectionUserSelections[sectionKey][currentQuestionNumber]].checked = true;
+      }
+
+      options.forEach((opt, idx) => {
+        opt.addEventListener('change', () => {
+          // Save current selection
+          if (!sectionUserSelections[sectionKey]) {
+            sectionUserSelections[sectionKey] = {};
+          }
+          sectionUserSelections[sectionKey][currentQuestionNumber] = idx;
+
+          // Update section state
+          let state = '';
+          if (opt.checked) {
+            if (paletteBox.classList.contains('review')) {
+              state = 'answeredreview';
+            } else {
+              state = 'answered';
+            }
+          } else {
+            if (paletteBox.classList.contains('review')) {
+              state = 'review';
+            } else {
+              state = 'notanswered';
+            }
+          }
+          sectionStates[sectionKey][currentQuestionNumber - 1] = state;
+          setPaletteBoxState(paletteBox, state, currentQuestionNumber);
+          updateLegend();
+          
+          // Update response data
+          updateResponseData(currentQuestionNumber, idx, state);
+        });
+      });
+    }
+
+    document.getElementById('mark-review').onclick = e => {
+      flashBtn(e.target);
+      const p = document.querySelectorAll('.palette-num')[currentQuestionNumber - 1];
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+      let state = '';
+      
+      if (currentSection.section.includes('sec-2')) {
+        const numericalInput = document.querySelector('.numerical-input');
+        const hasValue = numericalInput && numericalInput.value.trim() !== '';
+        state = hasValue ? 'answeredreview' : 'review';
+      } else {
+        if ([...document.querySelectorAll('.option-radio')].some(o => o.checked)) {
+          state = 'answeredreview';
+        } else {
+          state = 'review';
+        }
+      }
+      
+      sectionStates[sectionKey][currentQuestionNumber - 1] = state;
+      setPaletteBoxState(p, state, currentQuestionNumber);
+      updateLegend();
+      
+      if (currentQuestionNumber < questions.length) selectQuestion(currentQuestionNumber + 1);
+    };
+
+    document.getElementById('clear-response').onclick = e => {
+      flashBtn(e.target);
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+      
+      if (currentSection.section.includes('sec-2')) {
+        const numericalInput = document.querySelector('.numerical-input');
+        if (numericalInput) {
+          numericalInput.value = '';
+        }
+      } else {
+        document.querySelectorAll('.option-radio').forEach(o => o.checked = false);
+      }
+      
+      if (sectionUserSelections[sectionKey]) {
+        delete sectionUserSelections[sectionKey][currentQuestionNumber];
+      }
+      
+      const p = document.querySelectorAll('.palette-num')[currentQuestionNumber - 1];
+      sectionStates[sectionKey][currentQuestionNumber - 1] = 'notanswered';
+      setPaletteBoxState(p, 'notanswered', currentQuestionNumber);
+      updateLegend();
+    };
+
+    document.getElementById('save-next').onclick = e => {
+      flashBtn(e.target);
+      if (currentQuestionNumber < questions.length) {
+        selectQuestion(currentQuestionNumber + 1);
+      } else {
+        const currentTab = Array.from(sectionTabs).find(tab => tab.classList.contains('selected'));
+        const nextTab = currentTab?.nextElementSibling;
+        if (nextTab) nextTab.click();
+        else alert("This was the last question.");
+      }
+    };
+
+    document.getElementById('submit-btn').onclick = async e => {
+      flashBtn(e.target);
+      
+      try {
+        // Update end time and duration
+        responseData.testInfo.endTime = new Date().toISOString();
+        responseData.testInfo.duration = (new Date(responseData.testInfo.endTime) - new Date(responseData.testInfo.startTime)) / 1000;
+        
+        // Get current user
+        const user = firebase.auth().currentUser;
+        if (!user) {
+          throw new Error('No user logged in');
+        }
+
+        // Clear any existing test state
+        localStorage.removeItem('test_in_progress');
+        sessionStorage.clear();
+
+        console.log('Current user:', user.uid);
+        console.log('Response data:', responseData);
+
+        // Format responses for each section
+        const formattedResponses = {};
+        for (const [sectionKey, sectionData] of Object.entries(responseData.sections)) {
+          if (!sectionData || !sectionData.questions) {
+            console.error('Invalid section data:', sectionKey, sectionData);
+            continue;
+          }
+
+          formattedResponses[sectionKey] = {
+            questions: sectionData.questions.map(q => {
+              if (!q) {
+                console.error('Invalid question data in section:', sectionKey);
+                return null;
+              }
+              return {
+                questionId: q.questionId,
+                response: q.response,
+                state: q.state,
+                timeSpent: q.timeSpent || 0,
+                lastVisited: q.lastVisited || new Date().toISOString()
+              };
+            }).filter(q => q !== null)
+          };
+        }
+
+        console.log('Formatted responses:', formattedResponses);
+
+        // Create the test attempt document
+        const testAttempt = {
+          userId: user.uid,
+          testInfo: {
+            year: responseData.testInfo.year || '2025',
+            month: responseData.testInfo.month || 'april',
+            shift: responseData.testInfo.shift || '2-april-morning',
+            startTime: responseData.testInfo.startTime,
+            endTime: responseData.testInfo.endTime,
+            duration: responseData.testInfo.duration
+          },
+          sections: formattedResponses,
+          metadata: {
+            totalQuestions: responseData.metadata.totalQuestions || 0,
+            answeredQuestions: responseData.metadata.answeredQuestions || 0,
+            markedForReview: responseData.metadata.markedForReview || 0
+          },
+          submittedAt: new Date().toISOString()
+        };
+
+        console.log('Test attempt data:', testAttempt);
+
+        // Validate the data before saving
+        if (!testAttempt.testInfo.year || !testAttempt.testInfo.month || !testAttempt.testInfo.shift) {
+          throw new Error('Missing test information');
+        }
+
+        if (Object.keys(testAttempt.sections).length === 0) {
+          throw new Error('No sections data found');
+        }
+
+        // Ensure all required fields are present
+        for (const [sectionKey, sectionData] of Object.entries(testAttempt.sections)) {
+          if (!sectionData.questions || sectionData.questions.length === 0) {
+            throw new Error(`No questions found in section ${sectionKey}`);
+          }
+        }
+
+        // Store in Firebase under user's collection
+        const userTestRef = db.collection('user_test_responses').doc(user.uid);
+        const testAttemptsRef = userTestRef.collection('test_attempts');
+        
+        // Add the new test attempt
+        const newTestDoc = await testAttemptsRef.add(testAttempt);
+        
+        // Store the new test ID in localStorage for results page
+        localStorage.setItem('selected_test_id', newTestDoc.id);
+
+        // Keep only the last 5 attempts
+        const attemptsSnapshot = await testAttemptsRef
+          .orderBy('submittedAt', 'desc')
+          .get();
+        
+        const attempts = attemptsSnapshot.docs;
+        if (attempts.length > 5) {
+          // Delete older attempts
+          const deletePromises = attempts.slice(5).map(doc => doc.ref.delete());
+          await Promise.all(deletePromises);
+        }
+
+        confirmedLeave = true; // Allow navigation
+        alert("Test submitted successfully!");
+        // Replace the current history entry and redirect
+        window.location.replace("results.html");
+      } catch (error) {
+        console.error("Error saving responses:", error);
+        console.error("Error details:", {
+          message: error.message,
+          stack: error.stack,
+          code: error.code,
+          details: error.details
+        });
+        alert(`Error saving responses: ${error.message}. Please try again.`);
+      }
+    };
+
+    document.getElementById('previous-btn').onclick = e => {
+      flashBtn(e.target);
+      if (currentQuestionNumber > 1) {
+        selectQuestion(currentQuestionNumber - 1);
+      } else {
+        // Optionally, you can switch to the previous section/tab if needed
+        // Or just do nothing if already at the first question
+      }
+    };
+
+    function flashBtn(btn) {
+      btn.style.opacity = '0.5';
+      setTimeout(() => btn.style.opacity = '', 180);
+    }
+
+    function startTimer() {
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        if (totalSeconds > 0) {
+          totalSeconds--;
+          updateTimerDisplay();
+        } else {
+          clearInterval(timerInterval);
+          alert("Time's up! Test will be submitted.");
+          document.getElementById('submit-btn').click();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      timeLeftSpan.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function updateLegend() {
+      const paletteNums = document.querySelectorAll('.palette-num');
+      let answered = 0, notanswered = 0, review = 0, answeredReview = 0;
+
+      paletteNums.forEach(p => {
+        if (p.classList.contains('answered') && p.classList.contains('review')) {
+          answeredReview++;
+        } else if (p.classList.contains('answered')) {
+          answered++;
+        } else if (p.classList.contains('review')) {
+          review++;
+        } else if (p.classList.contains('notanswered')) {
+          notanswered++;
+        }
+      });
+
+      document.querySelector('.legend-count.legend-answered').textContent = answered;
+      document.querySelector('.legend-count.legend-notanswered').textContent = notanswered;
+      document.querySelector('.legend-count.legend-review').textContent = review;
+      document.querySelector('.legend-count.legend-answered-review').textContent = answeredReview;
+    }
+
+    function updateResponseData(questionNumber, response, state) {
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+      const questionIndex = questionNumber - 1;
+      
+      if (responseData.sections[sectionKey] && responseData.sections[sectionKey].questions[questionIndex]) {
+        const questionData = responseData.sections[sectionKey].questions[questionIndex];
+        const isSection2 = currentSection.section.includes('sec-2');
+        
+        // For MCQ questions, convert index to option letter (0->A, 1->B, etc.)
+        if (!isSection2) {
+          questionData.response = String.fromCharCode(65 + response); // Convert 0->A, 1->B, etc.
+        } else {
+          // For numerical questions, store the value as is
+          questionData.response = response;
+        }
+        
+        questionData.state = state;
+        questionData.lastVisited = new Date().toISOString();
+        
+        // Update metadata
+        responseData.metadata.totalQuestions = Object.values(responseData.sections)
+          .reduce((total, section) => total + section.questions.length, 0);
+        
+        responseData.metadata.answeredQuestions = Object.values(responseData.sections)
+          .reduce((total, section) => total + section.questions.filter(q => q.response !== null).length, 0);
+        
+        responseData.metadata.markedForReview = Object.values(responseData.sections)
+          .reduce((total, section) => total + section.questions.filter(q => q.state.includes('review')).length, 0);
+      }
+    }
+
+    // Disable right-click context menu
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+Shift+C
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) ||
+        (e.ctrlKey && e.key === "U")
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    });
+
+    // Request fullscreen on page load
+    document.addEventListener("DOMContentLoaded", function() {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
+        document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) { /* IE11 */
+        document.documentElement.msRequestFullscreen();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburgerMenu = document.getElementById('hamburger-menu');
+      const sidebar = document.querySelector('.sidebar');
+      const mainArea = document.querySelector('.main-area');
+
+      hamburgerMenu.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent click from bubbling to document
+        sidebar.classList.toggle('active');
+        hamburgerMenu.classList.toggle('active');
+      });
+
+      // Close sidebar when clicking outside
+      document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !hamburgerMenu.contains(event.target)) {
+          sidebar.classList.remove('active');
+          hamburgerMenu.classList.remove('active');
+        }
+      });
+
+      // Close sidebar when window is resized above mobile breakpoint
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+          sidebar.classList.remove('active');
+          hamburgerMenu.classList.remove('active');
+        }
+      });
+
+      // Add styles for hamburger menu animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @media (max-width: 768px) {
+          .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+          }
+          .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+          }
+          .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+          }
+          .hamburger-menu span {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    });
+  </script>
+</body>
+</html>

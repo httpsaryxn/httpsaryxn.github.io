@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Results</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+      background: #161616;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: #232323;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      color: #2d70b6;
+      margin: 0;
+      font-size: 24px;
+      text-align: left;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-btn {
+      background: #2d70b6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .header-btn:hover {
+      background: #1e4f8a;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 15px;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .header-buttons {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .header-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+
+    .test-info {
+      background: #232323;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px rgba(2, 255, 91, 0.679);
+      border: 1px solid rgba(2, 255, 175, 0.1);
+    }
+
+    .test-info h2 {
+      color: #fff;
+      margin: 0 0 15px 0;
+      font-size: 20px;
+      border-bottom: 2px solid #2d70b6;
+      padding-bottom: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .info-item {
+      background: #232323;
+      padding: 15px;
+      border-radius: 6px;
+      /* border: 0.5px solid rgb(2, 255, 175); */
+
+    }
+
+    .info-label {
+      color: #aaa;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .subject-section {
+      background: #232323;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .subject-title {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #2d70b6;
+    }
+
+    .section-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .result-card {
+      background: #232323;
+      padding: 20px;
+      border-radius: 6px;
+
+    }
+
+    .result-card h3 {
+      color: #2d70b6;
+      margin: 0 0 15px 0;
+      font-size: 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .stat-item {
+      background: #232323;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-label {
+      color: #aaa;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .correct {
+      color: #28a745;
+    }
+
+    .incorrect {
+      color: #dc3545;
+    }
+
+    .unattempted {
+      color: #6c757d;
+    }
+
+    .total-score {
+      background: #2d70b6;
+      color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .error-message {
+      background: #232323;
+      color: #dc3545;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 18px;
+    }
+
+    .answers-review {
+      background: #232323;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+      background: #232323;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Test Results</h1>
+      <div class="header-buttons">
+        <button class="header-btn" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
+      </div>
+    </div>
+    <div id="test-info" class="test-info">
+      <h2>Test Information</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Test Date</div>
+          <div class="info-value" id="test-date">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Duration</div>
+          <div class="info-value" id="test-duration">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Total Questions</div>
+          <div class="info-value" id="total-questions">75</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Questions Attempted</div>
+          <div class="info-value" id="questions-attempted">-</div>
+        </div>
+      </div>
+    </div>
+    <div id="results-content">
+      <div class="loading">Loading results...</div>
+    </div>
+  </div>
+
+  <script>
+    // Prevent going back to exam UI
+    if (window.history && window.history.pushState) {
+      window.history.pushState(null, null, window.location.href);
+      window.onpopstate = function() {
+        window.history.pushState(null, null, window.location.href);
+        window.location.href = 'dashboard.html';
+      };
+    }
+
+    // Clear any test-related data
+    localStorage.removeItem('test_in_progress');
+    sessionStorage.clear();
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+      authDomain: "practiso-9b3dd.firebaseapp.com",
+      projectId: "practiso-9b3dd",
+      storageBucket: "practiso-9b3dd.appspot.com",
+      messagingSenderId: "263842850217",
+      appId: "1:263842850217:web:129de6a752bd8831b150b8",
+      measurementId: "G-CG44V5WG0G"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "/login.html";
+        return;
+      }
+      loadResults(user.uid);
+    });
+
+    async function loadResults(userId) {
+      const resultsContent = document.getElementById('results-content');
+      let totalScore = 0;
+
+      try {
+        console.log('Loading results for user:', userId);
+        
+        // Get the selected test ID from localStorage
+        const selectedTestId = localStorage.getItem('selected_test_id');
+        
+        let testDoc;
+        if (selectedTestId) {
+          // If a specific test was selected, fetch that test
+          testDoc = await db.collection('user_test_responses')
+            .doc(userId)
+            .collection('test_attempts')
+            .doc(selectedTestId)
+            .get();
+            
+          // Clear the selected test ID
+          localStorage.removeItem('selected_test_id');
+        } else {
+          // If no specific test was selected, fetch the most recent test
+          const recentTestsSnapshot = await db.collection('user_test_responses')
+            .doc(userId)
+            .collection('test_attempts')
+            .orderBy('submittedAt', 'desc')
+            .limit(1)
+            .get();
+            
+          if (recentTestsSnapshot.empty) {
+            showError('No test attempts found. Please complete a test first.');
+            return;
+          }
+          
+          testDoc = recentTestsSnapshot.docs[0];
+        }
+        
+        if (!testDoc.exists) {
+          showError('Test not found. Please try again.');
+          return;
+        }
+        
+        const responseData = testDoc.data();
+        console.log('Loaded test from Firebase:', responseData);
+        
+        // Update test info
+        document.getElementById('test-date').textContent = new Date(responseData.testInfo.startTime).toLocaleDateString();
+        document.getElementById('test-duration').textContent = `${Math.floor(responseData.testInfo.duration / 60)} minutes`;
+        document.getElementById('total-questions').textContent = '75';
+        document.getElementById('questions-attempted').textContent = responseData.metadata.answeredQuestions;
+
+        // Clear loading message
+        resultsContent.innerHTML = '';
+
+        // Process each section
+        for (const [sectionKey, sectionData] of Object.entries(responseData.sections)) {
+          console.log('Processing section:', sectionKey, sectionData);
+          const [subject, section] = sectionKey.split('-');
+          const subjectSection = document.createElement('div');
+          subjectSection.className = 'subject-section';
+          
+          const sectionTitle = subject.charAt(0).toUpperCase() + subject.slice(1);
+          
+          // Determine if this is a numerical section based on question IDs
+          const firstQuestionId = sectionData.questions[0]?.questionId;
+          const isNumerical = firstQuestionId && parseInt(firstQuestionId.substring(1)) > 20;
+          const sectionType = isNumerical ? 'Numerical' : 'MCQ';
+          const sectionNumber = isNumerical ? '2' : '1';
+          
+          // Create a consistent section key for UI elements
+          const uiSectionKey = `${subject}-sec-${sectionNumber}-${isNumerical ? 'num' : 'mcq'}`;
+          
+          console.log('Section type detection:', {
+            sectionKey,
+            sectionData,
+            firstQuestionId,
+            isNumerical,
+            sectionType,
+            sectionNumber,
+            uiSectionKey
+          });
+          
+          subjectSection.innerHTML = `
+            <div class="subject-title">${sectionTitle}</div>
+            <div class="section-results">
+              <div class="result-card">
+                <h3>Section ${sectionNumber} (${sectionType})</h3>
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <div class="stat-label">Correct Answers</div>
+                    <div class="stat-value correct" id="${uiSectionKey}-correct">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Incorrect Answers</div>
+                    <div class="stat-value incorrect" id="${uiSectionKey}-incorrect">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Unattempted</div>
+                    <div class="stat-value unattempted" id="${uiSectionKey}-unattempted">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Section Score</div>
+                    <div class="stat-value" id="${uiSectionKey}-score">0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          resultsContent.appendChild(subjectSection);
+
+          try {
+            // Calculate section score
+            const sectionScore = await calculateSectionScore(subject, `sec-${sectionNumber}-${isNumerical ? 'num' : 'mcq'}`, sectionData.questions, responseData.testInfo, uiSectionKey);
+            totalScore += sectionScore;
+            console.log(`Section ${uiSectionKey} score:`, sectionScore);
+          } catch (sectionError) {
+            console.error('Error calculating section score:', sectionError);
+            console.error('Section details:', { 
+              subject, 
+              section: `sec-${sectionNumber}-${isNumerical ? 'num' : 'mcq'}`, 
+              questions: sectionData.questions, 
+              testInfo: responseData.testInfo 
+            });
+          }
+        }
+
+        // Add total score after all sections are processed
+        const totalScoreDiv = document.createElement('div');
+        totalScoreDiv.className = 'total-score';
+        totalScoreDiv.textContent = `Total Score: ${totalScore}`;
+        document.getElementById('test-info').appendChild(totalScoreDiv);
+
+        // Add tabs for answers review
+        const answersReviewDiv = document.createElement('div');
+        answersReviewDiv.className = 'answers-review';
+        answersReviewDiv.style.cssText = `
+          
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          margin-top: 20px;
+        `;
+
+        // Create tabs
+        const tabsDiv = document.createElement('div');
+        tabsDiv.style.cssText = `
+          display: flex;
+          gap: 10px;
+          margin-bottom: 20px;
+          border-bottom: 2px solid #eee;
+          padding-bottom: 10px;
+        `;
+
+        const correctTab = document.createElement('button');
+        correctTab.textContent = 'Correct Answers';
+        correctTab.style.cssText = `
+          padding: 10px 20px;
+          background: #00ff00;
+          color: #000;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+        `;
+
+        const wrongTab = document.createElement('button');
+        wrongTab.textContent = 'Wrong Answers';
+        wrongTab.style.cssText = `
+          padding: 10px 20px;
+          background: #333;
+          color: #FF0000;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+        `;
+
+        tabsDiv.appendChild(correctTab);
+        tabsDiv.appendChild(wrongTab);
+        answersReviewDiv.appendChild(tabsDiv);
+
+        // Create content containers
+        const correctContent = document.createElement('div');
+        correctContent.className = 'tab-content';
+        correctContent.style.cssText = `
+          display: none;
+          padding: 20px;
+          border-radius: 8px;
+        `;
+
+        const wrongContent = document.createElement('div');
+        wrongContent.className = 'tab-content';
+        wrongContent.style.cssText = `
+          display: none;
+          padding: 20px;
+          border-radius: 8px;
+        `;
+
+        answersReviewDiv.appendChild(correctContent);
+        answersReviewDiv.appendChild(wrongContent);
+        resultsContent.appendChild(answersReviewDiv);
+
+        // Process answers for both tabs
+        let correctAnswers = [];
+        let wrongAnswers = [];
+
+        for (const [sectionKey, sectionData] of Object.entries(responseData.sections)) {
+          const [subject, section] = sectionKey.split('-');
+          const firstQuestionId = sectionData.questions[0]?.questionId;
+          const isNumerical = firstQuestionId && parseInt(firstQuestionId.substring(1)) > 20;
+          const sectionNumber = isNumerical ? '2' : '1';
+          const sectionType = isNumerical ? 'num' : 'mcq';
+          const fullSection = `sec-${sectionNumber}-${sectionType}`;
+
+          try {
+            const path = `years/${responseData.testInfo.year}/${responseData.testInfo.month}/${responseData.testInfo.shift}/subjects/${subject}/sections/${fullSection}/questions`;
+            const questionsSnapshot = await db.collection(path).get();
+            
+            if (questionsSnapshot.empty) continue;
+            
+            const correctAnswersMap = {};
+            questionsSnapshot.forEach(doc => {
+              correctAnswersMap[doc.id] = doc.data();
+            });
+
+            sectionData.questions.forEach(question => {
+              const userResponse = question.response;
+              const correctAnswer = correctAnswersMap[question.questionId]?.correct;
+              const questionText = correctAnswersMap[question.questionId]?.question;
+              
+              if (!userResponse) return;
+
+              const isCorrect = isNumerical 
+                ? Math.abs(parseFloat(userResponse) - parseFloat(correctAnswer)) < 0.0001
+                : (userResponse.charCodeAt(0) - 64) === parseInt(correctAnswer);
+
+              const answerInfo = {
+                subject: subject.charAt(0).toUpperCase() + subject.slice(1),
+                section: `Section ${sectionNumber} (${sectionType.toUpperCase()})`,
+                questionNumber: question.questionId,
+                questionText,
+                userAnswer: userResponse,
+                correctAnswer: isNumerical ? correctAnswer : String.fromCharCode(64 + parseInt(correctAnswer))
+              };
+
+              if (isCorrect) {
+                correctAnswers.push(answerInfo);
+              } else {
+                wrongAnswers.push(answerInfo);
+              }
+            });
+          } catch (error) {
+            console.error('Error processing answers:', error);
+          }
+        }
+
+        // Populate correct answers tab
+        if (correctAnswers.length > 0) {
+          correctAnswers.forEach(answer => {
+            const answerDiv = document.createElement('div');
+            answerDiv.style.cssText = `
+              background: #fff;
+              padding: 15px;
+              border-radius: 8px;
+              margin-bottom: 15px;
+              border-left: 4px solid #00ff00;
+            `;
+
+            // Check if question text is an image URL
+            const isQuestionImage = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(answer.questionText?.trim());
+            const questionContent = isQuestionImage 
+              ? `<img src="${answer.questionText}" style="max-width: 100%; height: auto; margin: 10px 0;" alt="Question Image">`
+              : `<p style="margin: 0 0 10px 0; color: #333;">${answer.questionText}</p>`;
+
+            answerDiv.innerHTML = `
+              <h3 style="margin: 0 0 10px 0; color: #333;">${answer.subject} - ${answer.section}</h3>
+              <p style="margin: 0 0 10px 0; color: #666;">Question ${answer.questionNumber}</p>
+              ${questionContent}
+              <p style="margin: 0; color: #00ff00; font-weight: bold;">Your Answer: ${answer.userAnswer}</p>
+            `;
+            correctContent.appendChild(answerDiv);
+          });
+        } else {
+          correctContent.innerHTML = '<p style="text-align: center; color: #666;">No correct answers to display</p>';
+        }
+
+        // Populate wrong answers tab
+        if (wrongAnswers.length > 0) {
+          wrongAnswers.forEach(answer => {
+            const answerDiv = document.createElement('div');
+            answerDiv.style.cssText = `
+              background: #fff;
+              padding: 15px;
+              border-radius: 8px;
+              margin-bottom: 15px;
+              border-left: 4px solid #ff4444;
+            `;
+
+            // Check if question text is an image URL
+            const isQuestionImage = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(answer.questionText?.trim());
+            const questionContent = isQuestionImage 
+              ? `<img src="${answer.questionText}" style="max-width: 100%; height: auto; margin: 10px 0;" alt="Question Image">`
+              : `<p style="margin: 0 0 10px 0; color: #333;">${answer.questionText}</p>`;
+
+            answerDiv.innerHTML = `
+              <h3 style="margin: 0 0 10px 0; color: #333;">${answer.subject} - ${answer.section}</h3>
+              <p style="margin: 0 0 10px 0; color: #666;">Question ${answer.questionNumber}</p>
+              ${questionContent}
+              <p style="margin: 0 0 5px 0; color: #ff4444; font-weight: bold;">Your Answer: ${answer.userAnswer}</p>
+              <p style="margin: 0; color: #00ff00; font-weight: bold;">Correct Answer: ${answer.correctAnswer}</p>
+            `;
+            wrongContent.appendChild(answerDiv);
+          });
+        } else {
+          wrongContent.innerHTML = '<p style="text-align: center; color: #666;">No wrong answers to display</p>';
+        }
+
+        // Add tab switching functionality
+        correctTab.onclick = () => {
+          correctTab.style.background = '#00ff00';
+          correctTab.style.color = '#000';
+          wrongTab.style.background = '#333';
+          wrongTab.style.color = '#fff';
+          correctContent.style.display = 'block';
+          wrongContent.style.display = 'none';
+        };
+
+        wrongTab.onclick = () => {
+          wrongTab.style.background = '#FF0000';
+          wrongTab.style.color = '#000';
+          correctTab.style.background = '#333';
+          correctTab.style.color = '#fff';
+          wrongContent.style.display = 'block';
+          correctContent.style.display = 'none';
+        };
+
+        // Show correct answers tab by default
+        correctTab.click();
+
+        // Add back button
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Back to Dashboard';
+        backButton.style.cssText = `
+          display: block;
+          margin: 20px auto;
+          padding: 10px 20px;
+          background: #2d70b6;
+          color: #fff;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+        `;
+        backButton.onclick = () => window.location.href = 'dashboard.html';
+        resultsContent.appendChild(backButton);
+
+      } catch (error) {
+        console.error('Error loading results:', error);
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          code: error.code
+        });
+        showError('Error loading results. Please try again later.');
+      }
+    }
+
+    async function calculateSectionScore(subject, section, questions, testInfo, uiSectionKey) {
+      try {
+        console.log('Calculating score for:', { subject, section, questions, testInfo, uiSectionKey });
+        const { year, month, shift } = testInfo;
+        
+        // Determine if this is a numerical section
+        const isNumerical = section.includes('sec-2') || section.includes('num');
+        const sectionType = isNumerical ? 'num' : 'mcq';
+        const sectionNumber = isNumerical ? '2' : '1';
+        const fullSection = `sec-${sectionNumber}-${sectionType}`;
+        
+        console.log('Section type detection:', {
+          section,
+          isNumerical,
+          sectionType,
+          sectionNumber,
+          fullSection
+        });
+        
+        // Construct the path to correct answers
+        const path = `years/${year}/${month}/${shift}/subjects/${subject}/sections/${fullSection}/questions`;
+        console.log('Fetching correct answers from path:', path);
+        
+        const questionsSnapshot = await db.collection(path).get();
+        console.log('Questions snapshot:', questionsSnapshot);
+        
+        if (questionsSnapshot.empty) {
+          console.error('No questions found at path:', path);
+          throw new Error(`No questions found for ${subject} ${fullSection}`);
+        }
+        
+        // Create a map of correct answers
+        const correctAnswers = {};
+        questionsSnapshot.forEach(doc => {
+          const data = doc.data();
+          console.log('Question data:', { id: doc.id, data });
+          // Store the correct answer
+          correctAnswers[doc.id] = data.correct;
+        });
+        console.log('Correct answers map:', correctAnswers);
+
+        let correct = 0;
+        let incorrect = 0;
+        let unattempted = 0;
+        let score = 0;
+
+        // Process each question
+        questions.forEach(question => {
+          const userResponse = question.response;
+          const correctAnswer = correctAnswers[question.questionId];
+          
+          console.log('Processing question:', {
+            questionId: question.questionId,
+            userResponse,
+            correctAnswer,
+            question,
+            isNumerical
+          });
+
+          if (!userResponse) {
+            // Question was not attempted
+            unattempted++;
+            console.log('Question unattempted');
+          } else {
+            // For numerical questions (Section 2)
+            if (isNumerical) {
+              // Convert both to numbers and compare
+              const userNum = parseFloat(userResponse);
+              const correctNum = parseFloat(correctAnswer);
+              
+              console.log('Numerical comparison:', {
+                userResponse,
+                userNum,
+                correctAnswer,
+                correctNum,
+                isEqual: userNum === correctNum,
+                userResponseType: typeof userResponse,
+                correctAnswerType: typeof correctAnswer,
+                userNumType: typeof userNum,
+                correctNumType: typeof correctNum
+              });
+              
+              // Check if both numbers are valid
+              if (!isNaN(userNum) && !isNaN(correctNum)) {
+                // Compare with a small tolerance for floating point numbers
+                const isEqual = Math.abs(userNum - correctNum) < 0.0001;
+                
+                if (isEqual) {
+                  correct++;
+                  score += 4;
+                  console.log('Correct numerical answer: +4');
+                } else {
+                  incorrect++;
+                  score -= 1;
+                  console.log('Incorrect numerical answer: -1');
+                }
+              } else {
+                incorrect++;
+                score -= 1;
+                console.log('Invalid numerical answer: -1');
+              }
+            } else {
+              // For MCQ questions (Section 1)
+              // Convert user's letter response (A,B,C,D) to number (1,2,3,4)
+              const userResponseNum = userResponse.charCodeAt(0) - 64; // A->1, B->2, C->3, D->4
+              const correctAnswerNum = parseInt(correctAnswer);
+              
+              console.log('MCQ comparison:', {
+                userResponse,
+                userResponseNum,
+                correctAnswer,
+                correctAnswerNum,
+                isEqual: userResponseNum === correctAnswerNum
+              });
+              
+              if (userResponseNum === correctAnswerNum) {
+                correct++;
+                score += 4;
+                console.log('Correct MCQ answer: +4');
+              } else {
+                incorrect++;
+                score -= 1;
+                console.log('Incorrect MCQ answer: -1');
+              }
+            }
+          }
+        });
+
+        console.log('Section results:', {
+          subject,
+          section: fullSection,
+          correct,
+          incorrect,
+          unattempted,
+          score,
+          correctAnswers,
+          questions
+        });
+
+        // Update UI using the provided uiSectionKey
+        document.getElementById(`${uiSectionKey}-correct`).textContent = correct;
+        document.getElementById(`${uiSectionKey}-incorrect`).textContent = incorrect;
+        document.getElementById(`${uiSectionKey}-unattempted`).textContent = unattempted;
+        document.getElementById(`${uiSectionKey}-score`).textContent = score;
+
+        return score;
+      } catch (error) {
+        console.error('Error calculating section score:', error);
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          code: error.code
+        });
+        throw error;
+      }
+    }
+
+    function showError(message) {
+      const resultsContent = document.getElementById('results-content');
+      resultsContent.innerHTML = '';
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.textContent = message;
+      resultsContent.appendChild(errorDiv);
+    }
+  </script>
+</body>
+</html>
