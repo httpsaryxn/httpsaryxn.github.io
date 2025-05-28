@@ -135,8 +135,92 @@
       display: block;
     }
     @media (max-width: 900px) {
-      .instructions-content, .instructions-footer { padding: 12px; }
-      .legend-table th, .legend-table td { font-size: 14px; }
+      .instructions-content, .instructions-footer { 
+        padding: 12px; 
+      }
+      .legend-table th, .legend-table td { 
+        font-size: 14px; 
+      }
+      .instructions-section-title {
+        font-size: 1.1rem;
+      }
+      .instructions-content li {
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+      .instructions-footer label {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .instructions-footer button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+      .instructions-footer .prev-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+      #begin-btn {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+      #agree-label {
+        max-width: 100%;
+        margin: 10px 0;
+      }
+      #agree-checkbox {
+        margin-right: 8px;
+      }
+    }
+    @media (max-width: 600px) {
+      .instructions-content {
+        padding: 10px;
+      }
+      .instructions-section-title {
+        font-size: 1rem;
+        margin: 15px 0 8px 0;
+      }
+      .instructions-content li {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+      .instructions-footer {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+      }
+      .instructions-footer label {
+        font-size: 13px;
+        order: 2;
+        margin: 10px 0;
+      }
+      .instructions-footer button {
+        width: 100%;
+        font-size: 15px;
+        padding: 8px 16px;
+      }
+      .instructions-footer .prev-btn {
+        width: 100%;
+        font-size: 14px;
+        padding: 8px 16px;
+        margin-right: 0;
+      }
+      #begin-btn {
+        width: 100%;
+        font-size: 15px;
+        padding: 8px 16px;
+      }
+      .legend-table {
+        margin: 12px 0;
+      }
+      .legend-table th, .legend-table td {
+        padding: 6px 8px;
+        font-size: 13px;
+      }
+      .legend-icon {
+        width: 24px;
+        height: 24px;
+      }
     }
     .instructions-footer.center-next {
       justify-content: center;
