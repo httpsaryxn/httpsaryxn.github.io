@@ -361,6 +361,13 @@
             </span>
             <span>Attempted and Marked for Review (Will be considered for evaluation)</span>
           </div>
+          <div class="legend-row">
+            <span class="legend-icon-container">
+              <div class="legend-icon notvisited-icon"></div>
+              <span class="legend-count legend-notvisited">0</span>
+            </span>
+            <span>Not Visited</span>
+          </div>
         </div>
         <div class="sidebar-section" id="sidebar-section">Physics Section 1</div>
         <div class="palette" id="palette"></div>
@@ -559,7 +566,7 @@
 
       // Initialize section state if not exists
       if (!sectionStates[sectionKey]) {
-        sectionStates[sectionKey] = Array(total).fill('notanswered');
+        sectionStates[sectionKey] = Array(total).fill('notvisited');
       }
 
       for (let i = 0; i < total; i++) {
@@ -583,27 +590,32 @@
         case 'answered':
           bg = 'answered.png';
           div.classList.add('answered');
-          div.classList.remove('notanswered', 'review', 'answeredreview');
+          div.classList.remove('notanswered', 'review', 'answeredreview', 'notvisited');
           break;
         case 'notanswered':
           bg = 'notanswered.png';
           div.classList.add('notanswered');
-          div.classList.remove('answered', 'review', 'answeredreview');
+          div.classList.remove('answered', 'review', 'answeredreview', 'notvisited');
           break;
         case 'review':
           bg = 'review.png';
           div.classList.add('review');
-          div.classList.remove('answered', 'notanswered', 'answeredreview');
+          div.classList.remove('answered', 'notanswered', 'answeredreview', 'notvisited');
           break;
         case 'answeredreview':
           bg = 'answeredreview.png';
           div.classList.add('answered', 'review', 'answeredreview');
-          div.classList.remove('notanswered');
+          div.classList.remove('notanswered', 'notvisited');
+          break;
+        case 'notvisited':
+          bg = 'notvisited.png';
+          div.classList.add('notvisited');
+          div.classList.remove('answered', 'notanswered', 'review', 'answeredreview');
           break;
         default:
-          bg = 'notanswered.png';
-          div.classList.add('notanswered');
-          div.classList.remove('answered', 'review', 'answeredreview');
+          bg = 'notvisited.png';
+          div.classList.add('notvisited');
+          div.classList.remove('answered', 'notanswered', 'review', 'answeredreview');
       }
       div.style.backgroundImage = `url('${bg}')`;
       div.style.backgroundSize = 'contain';
@@ -617,6 +629,15 @@
       document.querySelectorAll('.palette-num').forEach((el, idx) => {
         el.classList.toggle('selected', idx === num - 1);
       });
+      
+      // Update state to 'notanswered' when question is visited
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+      const paletteBox = document.querySelectorAll('.palette-num')[num - 1];
+      if (sectionStates[sectionKey][num - 1] === 'notvisited') {
+        sectionStates[sectionKey][num - 1] = 'notanswered';
+        setPaletteBoxState(paletteBox, 'notanswered', num);
+      }
+      
       loadQuestion(num);
       updateLegend();
 
@@ -707,33 +728,8 @@
 
       document.querySelector(".options").innerHTML = optionsHTML;
 
-      // Add event listener for numerical input
-      if (isSection2) {
-        const numericalInput = document.querySelector('.numerical-input');
-        if (numericalInput) {
-          numericalInput.addEventListener('input', () => {
-            const value = numericalInput.value;
-            if (!sectionUserSelections[sectionKey]) {
-              sectionUserSelections[sectionKey] = {};
-            }
-            sectionUserSelections[sectionKey][num] = value;
-            
-            // Update palette state
-            const paletteBox = document.querySelectorAll('.palette-num')[num - 1];
-            let state = value ? 'answered' : 'notanswered';
-            if (paletteBox.classList.contains('review')) {
-              state = value ? 'answeredreview' : 'review';
-            }
-            sectionStates[sectionKey][num - 1] = state;
-            setPaletteBoxState(paletteBox, state, num);
-            updateLegend();
-            
-            // Update response data
-            updateResponseData(num, value, state);
-          });
-        }
-      } else {
         // Restore previous selection for MCQ
+      if (!isSection2) {
         setTimeout(() => {
           const options = document.querySelectorAll('.option-radio');
           if (sectionUserSelections[sectionKey][num] !== undefined) {
@@ -751,45 +747,12 @@
       }
 
       const options = document.querySelectorAll('.option-radio');
-      const paletteBox = document.querySelectorAll('.palette-num')[currentQuestionNumber - 1];
       const sectionKey = `${currentSection.subject}-${currentSection.section}`;
 
       // Restore previous selection if exists
       if (sectionUserSelections[sectionKey] && sectionUserSelections[sectionKey][currentQuestionNumber] !== undefined) {
         options[sectionUserSelections[sectionKey][currentQuestionNumber]].checked = true;
       }
-
-      options.forEach((opt, idx) => {
-        opt.addEventListener('change', () => {
-          // Save current selection
-          if (!sectionUserSelections[sectionKey]) {
-            sectionUserSelections[sectionKey] = {};
-          }
-          sectionUserSelections[sectionKey][currentQuestionNumber] = idx;
-
-          // Update section state
-          let state = '';
-          if (opt.checked) {
-            if (paletteBox.classList.contains('review')) {
-              state = 'answeredreview';
-            } else {
-              state = 'answered';
-            }
-          } else {
-            if (paletteBox.classList.contains('review')) {
-              state = 'review';
-            } else {
-              state = 'notanswered';
-            }
-          }
-          sectionStates[sectionKey][currentQuestionNumber - 1] = state;
-          setPaletteBoxState(paletteBox, state, currentQuestionNumber);
-          updateLegend();
-          
-          // Update response data
-          updateResponseData(currentQuestionNumber, idx, state);
-        });
-      });
     }
 
     document.getElementById('mark-review').onclick = e => {
@@ -842,6 +805,48 @@
 
     document.getElementById('save-next').onclick = e => {
       flashBtn(e.target);
+      const sectionKey = `${currentSection.subject}-${currentSection.section}`;
+      const paletteBox = document.querySelectorAll('.palette-num')[currentQuestionNumber - 1];
+      
+      // Save current response
+      if (currentSection.section.includes('sec-2')) {
+        const numericalInput = document.querySelector('.numerical-input');
+        if (numericalInput) {
+          const value = numericalInput.value;
+          sectionUserSelections[sectionKey][currentQuestionNumber] = value;
+          
+          // Update state
+          let state = value ? 'answered' : 'notanswered';
+          if (paletteBox.classList.contains('review')) {
+            state = value ? 'answeredreview' : 'review';
+          }
+          sectionStates[sectionKey][currentQuestionNumber - 1] = state;
+          setPaletteBoxState(paletteBox, state, currentQuestionNumber);
+          
+          // Update response data
+          updateResponseData(currentQuestionNumber, value, state);
+        }
+      } else {
+        const selectedOption = [...document.querySelectorAll('.option-radio')].findIndex(o => o.checked);
+        if (selectedOption !== -1) {
+          sectionUserSelections[sectionKey][currentQuestionNumber] = selectedOption;
+          
+          // Update state
+          let state = 'answered';
+          if (paletteBox.classList.contains('review')) {
+            state = 'answeredreview';
+          }
+          sectionStates[sectionKey][currentQuestionNumber - 1] = state;
+          setPaletteBoxState(paletteBox, state, currentQuestionNumber);
+          
+          // Update response data
+          updateResponseData(currentQuestionNumber, selectedOption, state);
+        }
+      }
+      
+      updateLegend();
+      
+      // Move to next question
       if (currentQuestionNumber < questions.length) {
         selectQuestion(currentQuestionNumber + 1);
       } else {
@@ -1013,7 +1018,7 @@
 
     function updateLegend() {
       const paletteNums = document.querySelectorAll('.palette-num');
-      let answered = 0, notanswered = 0, review = 0, answeredReview = 0;
+      let answered = 0, notanswered = 0, review = 0, answeredReview = 0, notvisited = 0;
 
       paletteNums.forEach(p => {
         if (p.classList.contains('answered') && p.classList.contains('review')) {
@@ -1024,6 +1029,8 @@
           review++;
         } else if (p.classList.contains('notanswered')) {
           notanswered++;
+        } else if (p.classList.contains('notvisited')) {
+          notvisited++;
         }
       });
 
@@ -1031,6 +1038,7 @@
       document.querySelector('.legend-count.legend-notanswered').textContent = notanswered;
       document.querySelector('.legend-count.legend-review').textContent = review;
       document.querySelector('.legend-count.legend-answered-review').textContent = answeredReview;
+      document.querySelector('.legend-count.legend-notvisited').textContent = notvisited;
     }
 
     function updateResponseData(questionNumber, response, state) {
