@@ -15,6 +15,7 @@
       rel="stylesheet"
     />
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
         body {
@@ -125,7 +126,7 @@
         }
 
         h1 {
-          margin-left: 35px;
+          margin-left: 105px;
           margin-top: 200px;
           font-size: 48px;
         }
@@ -169,6 +170,99 @@
             flex: 0 1 100%;
           }
         }
+
+        .vote-container {
+          display: flex;
+          justify-content: center;
+          margin: 40px 20px;
+        }
+
+        .vote-box {
+          background-color: #282828;
+          border-radius: 10px;
+          padding: 20px;
+          text-align: center;
+          width: 80%;
+          max-width: 400px;
+        }
+
+        .vote-box h3 {
+          margin: 0 0 15px 0;
+          color: #fff;
+          font-family: 'Inter', sans-serif;
+          font-weight: 600;
+        }
+
+        .vote-button {
+          padding: 10px 25px;
+          background-color: #2d70b6;
+          border: none;
+          border-radius: 5px;
+          color: #ffffff;
+          cursor: pointer;
+          font-size: 16px;
+          font-weight: 600;
+          transition: background-color 0.3s ease;
+          margin-bottom: 10px;
+          font-family: 'Inter', sans-serif;
+        }
+
+        .vote-button:hover {
+          background-color: #1e4f8a;
+        }
+
+        .vote-button:disabled {
+          background-color: #666;
+          cursor: not-allowed;
+        }
+
+        .vote-count {
+          display: block;
+          color: #00ff00;
+          font-weight: bold;
+          font-size: 16px;
+          margin-top: 10px;
+          font-family: 'Inter', sans-serif;
+        }
+
+        .back-button {
+          position: absolute;
+          left: 35px;
+          top: 205px;
+          background: none;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          color: #fff;
+          cursor: pointer;
+          font-size: 24px;
+          transition: transform 0.3s ease;
+          z-index: 1;
+          padding: 8px;
+          margin-right: 20px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .back-button:hover {
+          transform: translateX(-5px);
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .back-button svg {
+          width: 20px;
+          height: 20px;
+          fill: currentColor;
+        }
+
+        .heading-container {
+          display: flex;
+          align-items: center;
+          margin-left: 35px;
+          margin-top: 200px;
+        }
     </style>
 </head>
 <body>
@@ -191,6 +285,11 @@
         </a>
     </nav>
 
+    <a href="dashboard.html" class="back-button">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+    </a>
     <h1>JEE 2025 APRIL</h1>
 
     <div class="box-container">
@@ -240,9 +339,19 @@
         <button class="action-button" data-shift="2-april-morning">Start Mock</button>
       </div>
     </div>
+    <h1>JEE 2025 January</h1>
+
+    <div class="vote-container">
+      <div class="vote-box">
+        <h3>Vote for January Shifts</h3>
+        <button class="vote-button" id="januaryVoteBtn">Vote</button>
+        <span class="vote-count" id="januaryVoteCount">0 votes</span>
+      </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
@@ -254,19 +363,109 @@
         measurementId: "G-CG44V5WG0G",
       };
 
+      // Log current domain for Firebase configuration
+      console.log('Current domain:', window.location.hostname);
+      console.log('Full URL:', window.location.href);
+
       firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      let currentUser = null;
 
       auth.onAuthStateChanged((user) => {
         if (!user) {
           window.location.href = "/login.html";
+        } else {
+          currentUser = user;
+          loadVotes();
+          checkUserVote();
         }
       });
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const buttons = document.querySelectorAll(".action-button");
+      async function handleVote() {
+        if (!currentUser) {
+          alert('Please login to vote');
+          return;
+        }
 
-        buttons.forEach((btn) => {
+        try {
+          // Check if user has already voted
+          const userVoteDoc = await db.collection('user_votes').doc(currentUser.uid).get();
+          const hasVoted = userVoteDoc.exists && userVoteDoc.data().votedJanuary;
+          
+          if (hasVoted) {
+            alert('You have already voted for January shifts');
+            return;
+          }
+
+          // Get current vote count
+          const voteRef = db.collection('january_votes').doc('total');
+          const voteDoc = await voteRef.get();
+          const currentCount = voteDoc.exists ? (voteDoc.data().count || 0) : 0;
+
+          // Update vote count
+          await voteRef.set({
+            count: currentCount + 1
+          }, { merge: true });
+
+          // Update user's vote status
+          await db.collection('user_votes').doc(currentUser.uid).set({
+            votedJanuary: true,
+            votedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+
+          // Update UI
+          const voteCountSpan = document.getElementById('januaryVoteCount');
+          voteCountSpan.textContent = `${currentCount + 1} votes`;
+
+          // Disable the voted button
+          const voteButton = document.getElementById('januaryVoteBtn');
+          voteButton.disabled = true;
+          voteButton.textContent = 'Voted';
+
+          // Show success message
+          alert('Vote recorded successfully!');
+
+        } catch (error) {
+          console.error('Error processing vote:', error);
+          alert('Error processing your vote. Please try again.');
+        }
+      }
+
+      async function loadVotes() {
+        try {
+          const voteDoc = await db.collection('january_votes').doc('total').get();
+          const voteCount = voteDoc.exists ? (voteDoc.data().count || 0) : 0;
+          document.getElementById('januaryVoteCount').textContent = `${voteCount} votes`;
+        } catch (error) {
+          console.error('Error loading votes:', error);
+          document.getElementById('januaryVoteCount').textContent = '0 votes';
+        }
+      }
+
+      async function checkUserVote() {
+        if (!currentUser) return;
+
+        try {
+          const userVoteDoc = await db.collection('user_votes').doc(currentUser.uid).get();
+          const hasVoted = userVoteDoc.exists && userVoteDoc.data().votedJanuary;
+          
+          const voteButton = document.getElementById('januaryVoteBtn');
+          if (hasVoted) {
+            voteButton.disabled = true;
+            voteButton.textContent = 'Voted';
+          }
+        } catch (error) {
+          console.error('Error checking user vote:', error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const actionButtons = document.querySelectorAll(".action-button");
+        const voteButton = document.getElementById("januaryVoteBtn");
+
+        actionButtons.forEach((btn) => {
           btn.addEventListener("click", () => {
             const shiftId = btn.getAttribute("data-shift");
             if (shiftId) {
@@ -274,6 +473,10 @@
             }
           });
         });
+
+        if (voteButton) {
+          voteButton.addEventListener("click", handleVote);
+        }
       });
     </script>
 </body>
