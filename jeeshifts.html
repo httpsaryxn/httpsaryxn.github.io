@@ -135,6 +135,12 @@
           body {
             overflow-x: hidden;
           }
+          
+          .back-button{
+            top: 202px;
+            left: 29px;
+
+          }
 
           .jeequiz {
             font-size: 13px;
@@ -169,6 +175,11 @@
           .box {
             flex: 0 1 100%;
           }
+          h1 {
+          margin-left: 105px;
+          margin-top: 200px;
+          font-size: 40px;
+        }
         }
 
         .vote-container {
@@ -261,7 +272,127 @@
           display: flex;
           align-items: center;
           margin-left: 35px;
-          margin-top: 200px;
+          margin-top: 180px;
+        }
+
+        .heading-wrapper {
+          display: flex;
+          align-items: center;
+          margin-top: 150px;
+          margin-left: 35px;
+          position: relative;
+        }
+
+        .heading-wrapper.january {
+          margin-top: 100px;
+        }
+
+        .back-button {
+          position: relative;
+          left: 0;
+          top: 0;
+          background: none;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          color: #fff;
+          cursor: pointer;
+          font-size: 24px;
+          transition: transform 0.3s ease;
+          z-index: 1;
+          padding: 8px;
+          margin-right: 20px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .back-button:hover {
+          transform: translateX(-5px);
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .back-button svg {
+          width: 20px;
+          height: 20px;
+          fill: currentColor;
+        }
+
+        h1 {
+          margin: 0;
+          font-size: 48px;
+        }
+
+        @media (max-width: 768px) {
+          body {
+            overflow-x: hidden;
+          }
+
+          .heading-wrapper {
+            margin-top: 150px;
+            margin-left: 20px;
+            margin-right: 2px;
+            justify-content: center;
+            position: relative;
+          }
+
+          .heading-wrapper.january {
+            margin-top: 60px;
+          }
+
+          .back-button {
+            width: 35px;
+            height: 35px;
+            padding: 6px;
+            position: absolute;
+            left: 0;
+          }
+
+          .back-button svg {
+            width: 18px;
+            height: 18px;
+          }
+
+          h1 {
+            font-size: 32px;
+            text-align: center;
+            width: 100%;
+          }
+
+          .jeequiz {
+            font-size: 13px;
+            padding: 6px;
+          }
+
+          .jeequiz:hover::after {
+            display: none;
+          }
+
+          .nav-links {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            position: absolute;
+            top: 9vh;
+            left: 0;
+            background: #a0a0a015;
+            border-radius: 0 0 10px 10px;
+          }
+
+          .nav-links a {
+            padding: 100px;
+            text-align: center;
+            font-size: 6px;
+          }
+
+          .jeequiz img {
+            display: none;
+          }
+
+          .box {
+            flex: 0 1 100%;
+          }
         }
     </style>
 </head>
@@ -285,12 +416,14 @@
         </a>
     </nav>
 
-    <a href="dashboard.html" class="back-button">
-        <svg viewBox="0 0 24 24">
-            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-    </a>
-    <h1>JEE 2025 APRIL</h1>
+    <div class="heading-wrapper">
+        <a href="dashboard.html" class="back-button">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+        </a>
+        <h1>JEE 2025 APRIL</h1>
+    </div>
 
     <div class="box-container">
       <div class="box">
@@ -339,7 +472,14 @@
         <button class="action-button" data-shift="2-april-morning">Start Mock</button>
       </div>
     </div>
-    <h1>JEE 2025 January</h1>
+    <div class="heading-wrapper january">
+        <a href="dashboard.html" class="back-button">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+        </a>
+        <h1>JEE 2025 January</h1>
+    </div>
 
     <div class="vote-container">
       <div class="vote-box">
