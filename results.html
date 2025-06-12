@@ -490,8 +490,21 @@
           font-weight: bold;
         `;
 
+        const unattemptedTab = document.createElement('button');
+        unattemptedTab.textContent = 'Unattempted Questions';
+        unattemptedTab.style.cssText = `
+          padding: 10px 20px;
+          background: #333;
+          color: #FFA500;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+        `;
+
         tabsDiv.appendChild(correctTab);
         tabsDiv.appendChild(wrongTab);
+        tabsDiv.appendChild(unattemptedTab);
         answersReviewDiv.appendChild(tabsDiv);
 
         // Create content containers
@@ -511,13 +524,23 @@
           border-radius: 8px;
         `;
 
+        const unattemptedContent = document.createElement('div');
+        unattemptedContent.className = 'tab-content';
+        unattemptedContent.style.cssText = `
+          display: none;
+          padding: 20px;
+          border-radius: 8px;
+        `;
+
         answersReviewDiv.appendChild(correctContent);
         answersReviewDiv.appendChild(wrongContent);
+        answersReviewDiv.appendChild(unattemptedContent);
         resultsContent.appendChild(answersReviewDiv);
 
-        // Process answers for both tabs
+        // Process answers for all tabs
         let correctAnswers = [];
         let wrongAnswers = [];
+        let unattemptedAnswers = [];
 
         for (const [sectionKey, sectionData] of Object.entries(responseData.sections)) {
           const [subject, section] = sectionKey.split('-');
@@ -543,25 +566,34 @@
               const correctAnswer = correctAnswersMap[question.questionId]?.correct;
               const questionText = correctAnswersMap[question.questionId]?.question;
               
-              if (!userResponse) return;
-
-              const isCorrect = isNumerical 
-                ? Math.abs(parseFloat(userResponse) - parseFloat(correctAnswer)) < 0.0001
-                : (userResponse.charCodeAt(0) - 64) === parseInt(correctAnswer);
-
-              const answerInfo = {
-                subject: subject.charAt(0).toUpperCase() + subject.slice(1),
-                section: `Section ${sectionNumber} (${sectionType.toUpperCase()})`,
-                questionNumber: question.questionId,
-                questionText,
-                userAnswer: userResponse,
-                correctAnswer: isNumerical ? correctAnswer : String.fromCharCode(64 + parseInt(correctAnswer))
-              };
-
-              if (isCorrect) {
-                correctAnswers.push(answerInfo);
+              if (!userResponse) {
+                unattemptedAnswers.push({
+                  subject: subject.charAt(0).toUpperCase() + subject.slice(1),
+                  section: `Section ${sectionNumber} (${sectionType.toUpperCase()})`,
+                  questionNumber: question.questionId,
+                  questionText,
+                  userAnswer: userResponse,
+                  correctAnswer: isNumerical ? correctAnswer : String.fromCharCode(64 + parseInt(correctAnswer))
+                });
               } else {
-                wrongAnswers.push(answerInfo);
+                const isCorrect = isNumerical 
+                  ? Math.abs(parseFloat(userResponse) - parseFloat(correctAnswer)) < 0.0001
+                  : (userResponse.charCodeAt(0) - 64) === parseInt(correctAnswer);
+
+                const answerInfo = {
+                  subject: subject.charAt(0).toUpperCase() + subject.slice(1),
+                  section: `Section ${sectionNumber} (${sectionType.toUpperCase()})`,
+                  questionNumber: question.questionId,
+                  questionText,
+                  userAnswer: userResponse,
+                  correctAnswer: isNumerical ? correctAnswer : String.fromCharCode(64 + parseInt(correctAnswer))
+                };
+
+                if (isCorrect) {
+                  correctAnswers.push(answerInfo);
+                } else {
+                  wrongAnswers.push(answerInfo);
+                }
               }
             });
           } catch (error) {
@@ -630,14 +662,48 @@
           wrongContent.innerHTML = '<p style="text-align: center; color: #666;">No wrong answers to display</p>';
         }
 
+        // Populate unattempted answers tab
+        if (unattemptedAnswers.length > 0) {
+          unattemptedAnswers.forEach(answer => {
+            const answerDiv = document.createElement('div');
+            answerDiv.style.cssText = `
+              background: #fff;
+              padding: 15px;
+              border-radius: 8px;
+              margin-bottom: 15px;
+              border-left: 4px solid #FFA500;
+            `;
+
+            // Check if question text is an image URL
+            const isQuestionImage = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(answer.questionText?.trim());
+            const questionContent = isQuestionImage 
+              ? `<img src="${answer.questionText}" style="max-width: 100%; height: auto; margin: 10px 0;" alt="Question Image">`
+              : `<p style="margin: 0 0 10px 0; color: #333;">${answer.questionText}</p>`;
+
+            answerDiv.innerHTML = `
+              <h3 style="margin: 0 0 10px 0; color: #333;">${answer.subject} - ${answer.section}</h3>
+              <p style="margin: 0 0 10px 0; color: #666;">Question ${answer.questionNumber}</p>
+              ${questionContent}
+              <p style="margin: 0 0 5px 0; color: #FFFFFF; font-weight: bold;">Status: Unattempted</p>
+              <p style="margin: 0; color: #00ff00; font-weight: bold;">Correct Answer: ${answer.correctAnswer}</p>
+            `;
+            unattemptedContent.appendChild(answerDiv);
+          });
+        } else {
+          unattemptedContent.innerHTML = '<p style="text-align: center; color: #666;">No unattempted questions to display</p>';
+        }
+
         // Add tab switching functionality
         correctTab.onclick = () => {
           correctTab.style.background = '#00ff00';
           correctTab.style.color = '#000';
           wrongTab.style.background = '#333';
           wrongTab.style.color = '#fff';
+          unattemptedTab.style.background = '#333';
+          unattemptedTab.style.color = '#FFFFFF';
           correctContent.style.display = 'block';
           wrongContent.style.display = 'none';
+          unattemptedContent.style.display = 'none';
         };
 
         wrongTab.onclick = () => {
@@ -645,8 +711,23 @@
           wrongTab.style.color = '#000';
           correctTab.style.background = '#333';
           correctTab.style.color = '#fff';
+          unattemptedTab.style.background = '#333';
+          unattemptedTab.style.color = '#FFFFFF';
           wrongContent.style.display = 'block';
           correctContent.style.display = 'none';
+          unattemptedContent.style.display = 'none';
+        };
+
+        unattemptedTab.onclick = () => {
+          unattemptedTab.style.background = '#FFA500';
+          unattemptedTab.style.color = '#000';
+          correctTab.style.background = '#333';
+          correctTab.style.color = '#fff';
+          wrongTab.style.background = '#333';
+          wrongTab.style.color = '#fff';
+          unattemptedContent.style.display = 'block';
+          correctContent.style.display = 'none';
+          wrongContent.style.display = 'none';
         };
 
         // Show correct answers tab by default
