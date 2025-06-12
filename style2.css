@@ -6,6 +6,9 @@ body {
   background-color: #161616;
   margin: 0;
 }
+p{
+  margin-top: 120px;
+}
 
 nav {
   position: fixed;
@@ -361,4 +364,120 @@ marquee {
   border-radius: 3px;
   z-index: 10;
 
+}
+
+.floating-bubble {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  cursor: pointer;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Popup Modal Styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999; /* Highest z-index to stay above ads */
+}
+
+.popup-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: 'Inter', sans-serif;
+}
+
+.popup-heading {
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.popup-content video {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.popup-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.close-btn {
+    background-color: #ff4444;
+    color: white;
+}
+
+.mock-btn {
+    background-color: #4fc74f;
+    color: white;
+}
+
+.popup-btn:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 778px) {
+    .popup-heading {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+    .popup-content {
+        width: 95%;
+        padding: 15px;
+    }
+    
+    .popup-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .popup-btn {
+        width: 100%;
+    }
 }
