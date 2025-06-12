@@ -450,7 +450,7 @@ transition-property: box-shadow;
 display: flex;
 margin: auto;
 position: relative;
-top: 25vh;
+top: 10vh;
 
 }
 
@@ -462,7 +462,7 @@ top: 25vh;
   border-top: 2px solid grey;  /* Top border */
   border-bottom: 2px solid grey;  /* Bottom border */
   position: relative;
-  top: 65vh;
+  top: 10vh;
 }
 .container {
   display: flex;
@@ -471,7 +471,7 @@ top: 25vh;
   gap: 10px;
   padding: 20px;
   position: relative;
-  top: 75vh;
+  top: 10vh;
 }
 .jeebooks{
   color: #fff;
