@@ -230,6 +230,12 @@ body {
   height: 32px;
   display: block;
 }
+.legend-icon.notvisited-icon {
+  width: 35px;
+  height: 32px;
+  background-color: #a4a4a4;
+  border-radius: 4px;
+}
 .legend-count {
   position: absolute;
   top: 45%;
@@ -239,8 +245,6 @@ body {
   font-weight: bold;
   font-size: 16px;
   pointer-events: none;
-  
-  /* Optionally, you can add a text-shadow for better contrast */
 }
 
 .sidebar-section {
@@ -278,6 +282,26 @@ body {
   font-size: 22px;
   font-weight: bold;
   color: #fff;
+}
+.palette-num.notvisited {
+  background-color: #a4a4a4;
+  border-radius: 4px;
+}
+.palette-num.notanswered {
+  background-color: transparent;
+  background-image: url('notanswered.png');
+}
+.palette-num.answered {
+  background-color: transparent;
+  background-image: url('answered.png');
+}
+.palette-num.review {
+  background-color: transparent;
+  background-image: url('review.png');
+}
+.palette-num.answeredreview {
+  background-color: transparent;
+  background-image: url('answeredreview.png');
 }
 .palette-num.selected,
 .palette-num.active {
