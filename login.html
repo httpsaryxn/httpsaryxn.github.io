@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+   <style>
         body {
             background-color: #161616;
             color: #ffffff;
@@ -236,6 +236,18 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        auth.onAuthStateChanged((user) => {
+            if (user && user.emailVerified) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUrl = urlParams.get('redirect');
+                if (redirectUrl) {
+                    window.location.replace(decodeURIComponent(redirectUrl));
+                } else {
+                    window.location.replace("/dashboard.html");
+                }
+            }
+        });
+
         function showForm(form) {
             ['login', 'signup'].forEach(f => {
                 document.getElementById(`${f}-form`).classList.remove('active');
@@ -249,11 +261,15 @@
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
 
-            auth.createUserWithEmailAndPassword(email, password)
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .then(() => {
+                    return auth.createUserWithEmailAndPassword(email, password)
+                })
                 .then((userCredential) => {
                     return userCredential.user.sendEmailVerification().then(() => {
                         alert("Verification email sent! Please check your inbox.");
                         showForm('login');
+                        return auth.signOut();
                     });
                 })
                 .catch((error) => {
@@ -275,7 +291,10 @@
         return;
     }
 
-    auth.signInWithEmailAndPassword(email, password)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            return auth.signInWithEmailAndPassword(email, password);
+        })
         .then((userCredential) => {
             return userCredential.user.reload().then(() => userCredential.user);
         })
@@ -285,7 +304,13 @@
                 auth.signOut();
                 throw new Error("Email not verified");
             }
-            window.location.href = "/dashboard";
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+            if (redirectUrl) {
+                window.location.replace(decodeURIComponent(redirectUrl));
+            } else {
+                window.location.replace("/dashboard.html");
+            }
         })
         .catch((error) => {
             if (error.message !== "Email not verified") {
@@ -297,9 +322,18 @@
 
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then(() => {
-            window.location.href = "/dashboard.html";
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        return auth.signInWithPopup(provider);
+      })
+      .then(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+            if (redirectUrl) {
+                window.location.replace(decodeURIComponent(redirectUrl));
+            } else {
+                window.location.replace("/dashboard.html");
+            }
         })
         .catch((error) => {
             if (error.code === 'auth/popup-closed-by-user') {
@@ -327,3 +361,4 @@ function signInWithGoogle() {
     </script>
 </body>
 </html>
+
