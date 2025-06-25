@@ -417,14 +417,46 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    const logoutBtn = document.getElementById('logout-btn');
 
     auth.onAuthStateChanged((user) => {
       if (user) {
+        // User is signed in
         const email = user.email;
-        document.getElementById('welcome-message').textContent = `WELCOME, ${email}`;
+        document.getElementById('welcome-message').textContent = `WELCOME, ${email.toUpperCase()}`;
+        
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.className = 'logout-btn';
+        logoutBtn.style.backgroundColor = '#dc3545';
+        logoutBtn.style.color = 'white';
+        logoutBtn.onclick = () => {
+          auth.signOut().catch((error) => {
+            console.error("Error signing out:", error);
+          });
+        };
+        
         loadRecentTests();
+        document.querySelector('.scroll-buttons').style.display = 'flex';
+
       } else {
-        window.location.href = "/login.html";
+        // User is not signed in
+        document.getElementById('welcome-message').textContent = 'WELCOME';
+        
+        logoutBtn.textContent = 'Sign In';
+        logoutBtn.className = 'logout-btn'; 
+        logoutBtn.style.backgroundColor = '#00ff00';
+        logoutBtn.style.color = '#000';
+        logoutBtn.onclick = () => {
+          window.location.href = `login.html?redirect=dashboard.html`;
+        };
+
+        const recentTestsContainer = document.getElementById('recent-tests');
+        recentTestsContainer.innerHTML = `
+          <div style="text-align: center;">
+            <p style="color: #888;">Sign in to view your test history.</p>
+          </div>
+        `;
+        document.querySelector('.scroll-buttons').style.display = 'none';
       }
     });
 
@@ -448,7 +480,7 @@
         const snapshot = await testAttemptsRef.get();
         
         if (snapshot.empty) {
-          recentTestsContainer.innerHTML = '<p style="text-align: center; color: #888;">No tests taken yet</p>';
+          recentTestsContainer.innerHTML = '<p style="text-align: center; color: #888;">No tests taken yet. <br>Go to the "Exams" section to start a new mock test!</p>';
           return;
         }
 
@@ -630,14 +662,14 @@
       }
     }
 
-    // Add logout functionality
-    document.getElementById('logout-btn').addEventListener('click', () => {
+    // Add logout functionality - This logic is now handled in onAuthStateChanged
+    /* document.getElementById('logout-btn').addEventListener('click', () => {
       auth.signOut().then(() => {
         window.location.href = "/login.html";
       }).catch((error) => {
         console.error("Error signing out:", error);
       });
-    });
+    }); */
   </script>
 
   </div>
