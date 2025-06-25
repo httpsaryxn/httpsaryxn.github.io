@@ -529,18 +529,15 @@
       let currentUser = null;
 
       auth.onAuthStateChanged((user) => {
-        if (!user) {
-          window.location.href = "/login.html";
-        } else {
-          currentUser = user;
-          loadVotes();
-          checkUserVote();
-        }
+        currentUser = user;
+        loadVotes();
+        checkUserVote();
       });
 
       async function handleVote() {
         if (!currentUser) {
           alert('Please login to vote');
+          window.location.href = `login.html?redirect=jeeshifts.html`;
           return;
         }
 
@@ -623,8 +620,13 @@
         actionButtons.forEach((btn) => {
           btn.addEventListener("click", () => {
             const shiftId = btn.getAttribute("data-shift");
-            if (shiftId) {
-              window.location.href = `instructions.html?shift=${shiftId}`;
+            if (currentUser) {
+              if (shiftId) {
+                window.location.href = `instructions.html?shift=${shiftId}`;
+              }
+            } else {
+              const redirectUrl = `instructions.html?shift=${shiftId}`;
+              window.location.href = `login.html?redirect=${encodeURIComponent(redirectUrl)}`;
             }
           });
         });
@@ -636,3 +638,4 @@
     </script>
 </body>
 </html>
+
