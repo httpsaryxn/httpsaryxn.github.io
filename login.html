@@ -19,7 +19,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-   <style>
+    <link rel="icon" href="practisoV2logo.png" type="image/png"/>
+    <style>
         body {
             background-color: #161616;
             color: #ffffff;
@@ -30,26 +31,65 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-        }
-        
-        .spline-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
+            background: url('loginimg-pc.png') no-repeat center center fixed;
+            background-size: cover;
         }
 
+        
+
+
         .auth-container {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(90, 90, 90, 0);
             padding: 2rem;
             border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.241); */
             width: 80%;
             max-width: 360px;
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            
+            border: 0.5px dotted rgba(255, 255, 255, 0.586);
+            margin-left: 5.5vw;
+            margin-right: auto;
+        }
+        @media (max-width: 700px) {
+            body {
+                background: url('loginimg-mob.png') no-repeat center center fixed;
+                background-size: cover;
+            }
+            .auth-container {
+                margin: -166px auto 0 auto !important;
+                width: 92% !important;
+                max-width: 340px !important;
+                max-height: 410px;
+                padding: 8px 22px;
+                border: none;
+                backdrop-filter: blur(25px);
+                background: rgba(255, 255, 255, 0.132);
+            }
+            .form input {
+                font-size: 0.95rem;
+                margin: 2px 0;
+                padding: 7px 8px;
+            }
+            .form button {
+                margin-top: 1px;
+                padding: 8px 0;
+                font-size: 0.98rem;
+            }
+            .google-btn-container {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+            .google-btn {
+                padding: 7px 0.5rem;
+                font-size: 0.98rem;
+                margin-bottom: 0.5rem;
+            }
+            .tabs {
+                margin-bottom: 0;
+            }
+            .reset-link {
+                margin-top: 0.3rem;
+            }
         }
 
         .tabs {
@@ -60,7 +100,7 @@
 
         .tabs button {
             flex: 1;
-            padding: 0.75rem;
+            padding: 0.55rem;
             background: none;
             border: none;
             cursor: pointer;
@@ -112,7 +152,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.3s ease;
-            margin-top: 19px;
+            margin-top: 3px;
         }
 
         .form button:hover {
@@ -122,7 +162,7 @@
         .google-btn-container {
             display: flex;
             justify-content: center;
-            margin-top: 1rem;
+            margin-top: 0rem;
         }
 
         .google-btn {
@@ -174,13 +214,9 @@
     </style>
 </head>
 <body>
-    <div class="spline-bg">
-        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.92/build/spline-viewer.js"></script>
-        <spline-viewer url="https://prod.spline.design/OAGZGbWvpfCuu8Ue/scene.splinecode"></spline-viewer>
-    </div>
-    
+    <!-- Removed the .spline-bg background for a transparent background -->
     <div class="auth-container">
-        <h1 style="color: white; font-family: 'Inter', sans-serif; font-size: 20px; text-align: center; margin-bottom: 20px; font-weight: 500;">Please Login to give MOCK TEST</h1>
+        <h1 style="color: white; font-family: 'Inter', sans-serif; font-size: 18px; text-align: center; margin-bottom: 20px; font-weight: 500;">Please Login to give MOCK TEST</h1>
         <div class="tabs">
             <button id="login-tab" class="active" onclick="showForm('login')">Login</button>
             <button id="signup-tab" onclick="showForm('signup')">Sign Up</button>
@@ -235,6 +271,29 @@
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+
+        // Handle redirect result for mobile Google sign-in
+        auth.getRedirectResult().then((result) => {
+            if (result && result.user) {
+                // User successfully signed in via redirect
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUrl = urlParams.get('redirect');
+                if (redirectUrl) {
+                    window.location.replace(decodeURIComponent(redirectUrl));
+                } else {
+                    window.location.replace("/dashboard.html");
+                }
+            }
+        }).catch((error) => {
+            // Handle redirect errors
+            if (error.code === 'auth/account-exists-with-different-credential') {
+                alert("An account already exists with the same email address but different sign-in credentials.");
+            } else if (error.code === 'auth/invalid-credential') {
+                alert("The sign-in method is not available. Please try again.");
+            } else {
+                console.error("Redirect error:", error);
+            }
+        });
 
         auth.onAuthStateChanged((user) => {
             if (user && user.emailVerified) {
@@ -322,26 +381,39 @@
 
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
+    
+    // Check if it's a mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(() => {
-        return auth.signInWithPopup(provider);
+        if (isMobile) {
+          // Use redirect for mobile devices
+          return auth.signInWithRedirect(provider);
+        } else {
+          // Use popup for desktop devices
+          return auth.signInWithPopup(provider);
+        }
       })
-      .then(() => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const redirectUrl = urlParams.get('redirect');
-            if (redirectUrl) {
-                window.location.replace(decodeURIComponent(redirectUrl));
-            } else {
-                window.location.replace("/dashboard.html");
-            }
-        })
-        .catch((error) => {
-            if (error.code === 'auth/popup-closed-by-user') {
-                alert("You closed the popup before completing sign-in. Please try again.");
-            } else {
-                alert(getFriendlyError(error));
-            }
-        });
+      .then((result) => {
+        // This will only execute for popup method (desktop)
+        if (result) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectUrl = urlParams.get('redirect');
+          if (redirectUrl) {
+              window.location.replace(decodeURIComponent(redirectUrl));
+          } else {
+              window.location.replace("/dashboard.html");
+          }
+        }
+      })
+      .catch((error) => {
+        if (error.code === 'auth/popup-closed-by-user') {
+            alert("You closed the popup before completing sign-in. Please try again.");
+        } else {
+            alert(getFriendlyError(error));
+        }
+      });
 }
 
 
