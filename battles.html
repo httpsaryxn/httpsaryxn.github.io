@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Battles | Practiso - Real-Time JEE Multiplayer Quiz Battles</title>
+<meta name="description" content="Challenge your friends to real-time JEE Study Battles on Practiso! Compete on authentic past year questions, track your scores live, and boost your exam prep with multiplayer quiz rooms. Join, play, and master JEE with the most engaging practice platform.">
+<meta name="keywords" content="JEE, Study Battles, Practiso, Multiplayer Quiz, JEE Practice, Past Year Questions, Real-Time Quiz, JEE Main, JEE Advanced, Exam Preparation, Competitive Exams">
+<meta name="author" content="Practiso">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="battles.css?v=1.1">
+    <link rel="stylesheet" href="navbar.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+     <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WVQ53GG33W"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WVQ53GG33W');
+</script>
+    
+</head>
+<body>
+    <div class="static-navbar">
+        <a href="index.html"><img src="practisoV2logo.png" alt="Logo" class="static-navbar-logo"></a>
+        <a href="login.html?redirect=" id="signin-btn-link" style="text-decoration:none;"><button class="button" id="signin-btn">
+          <div>
+            <div>
+              <div>Sign in</div>
+            </div>
+          </div>
+        </button></a>
+        <span id="hamburger-menu" style="display:none; font-size:2.2rem; cursor:pointer; margin-right:18px;">&#9776;</span>
+      </div>
+      <div class="navbar-wrapper">
+        <nav class="main-navbar">
+          <ul class="main-navbar-list">
+            <li class="main-navbar-item left"><a href="dashboard.html">🧪Mock Test</a></li>
+            <li class="main-navbar-item center"><a href="index.html" class="home-link">📚Books</a></li>
+            <li class="main-navbar-item right"><a href="battles.html" class="home-link active">⚔️Study Battles</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Sidebar -->
+  <div id="sidebar" style="display:none; position:fixed; top:0; right:0; height:100vh; width:260px; background:#232323; box-shadow:-2px 0 16px rgba(0,0,0,0.18); z-index:9999; transform:translateX(100%); transition:transform 0.3s cubic-bezier(.4,2,.6,1);">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 18px 0 18px;">
+      <span style="font-size:1.5rem; color:#fff; font-weight:600;">Menu</span>
+      <span id="sidebar-close" style="font-size:2rem; color:#fff; cursor:pointer;">&times;</span>
+    </div>
+    <hr style="border:0; border-top:1px solid #444; margin:16px 0;">
+    <div id="user-email" style="padding:0 18px; color:#fff; font-size:14px; margin-bottom:10px; word-break:break-all;"></div>
+    <button id="logout-btn" style="margin:18px; padding:10px 18px; background:#dc3545; color:#fff; border:none; border-radius:6px; font-size:1rem; cursor:pointer; width:calc(100% - 36px);">Logout</button>
+  </div>
+    
+  <div class="container">
+        <!-- Header -->
+        <!-- <div class="header">
+            <h1>🔷 Study Battles</h1>
+            <p>Compete with friends on JEE Past Year Questions</p>
+        </div> -->
+
+
+        <!-- Home View -->
+        <div id="homeView" class="view active">
+            <div class="home-actions">
+                <div class="action-card">
+                    <h3>⚔️ Create Battle Room</h3>
+                    <p>Start a new battle and invite friends</p>
+                    <button class="card-btn" onclick="showCreateRoom()">Create Room</button>
+                </div>
+                <div class="action-card">
+                    <h3>🎮 Join Battle</h3>
+                    <p>Enter room code to join an existing battle</p>
+                    <button class="card-btn" onclick="showJoinRoom()">Join Room</button>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Create Room View -->
+        <div id="createRoomView" class="view">
+            <div class="form-container">
+                <h2>Create Battle Room</h2>
+                <form id="createRoomForm">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select id="subject" required>
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="maths">Mathematics</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Section</label>
+                        <select id="section" required>
+                            <option value="mcq">MCQ</option>
+                            <option value="numerical">Numerical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Questions</label>
+                        <select id="questionCount" required>
+                            <option value="5">5 Questions</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Create Room</button>
+                    <button type="button" class="btn btn-secondary" onclick="showHome()" style="margin-left: 10px;">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Join Room View -->
+        <div id="joinRoomView" class="view">
+            <div class="form-container">
+                <h2>Join Battle Room</h2>
+                <form id="joinRoomForm">
+                    <div class="form-group">
+                        <label>Room Code</label>
+                        <input type="text" id="roomCodeInput" placeholder="Enter 6-digit code" maxlength="6" required>
+                    </div>
+                    <button type="submit" class="btn">Join Room</button>
+                    <button type="button" class="btn btn-secondary" onclick="showHome()" style="margin-left: 10px;">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lobby View -->
+        <div id="lobbyView" class="view">
+            <div class="lobby-container">
+                <h2>Battle Lobby</h2>
+                <div class="room-code-display">
+                    <h2>Room Code</h2>
+                    <div class="code" id="roomCodeDisplay"></div>
+                    <button class="btn" onclick="copyRoomCode()">Copy Code</button>
+                </div>
+                
+                <div class="settings-display" id="settingsDisplay"></div>
+                
+                <div class="players-list">
+                    <h3>Players</h3>
+                    <div id="playersList"></div>
+                </div>
+                
+                <div class="button-container">
+                    <button id="readyBtn" class="btn" onclick="toggleReady()">Ready</button>
+                    <button id="startBtn" class="btn btn-success" onclick="startBattle()" style="display: none;">Start Battle</button>
+                    <button class="btn btn-secondary" onclick="leaveLobby()">Leave</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Arena View -->
+        <div id="battleView" class="view">
+            <div class="battle-header">
+                <div class="timer">⏱️ Time: <span id="timerDisplay">60</span>s</div>
+                <div class="question-progress">📝 Question <span id="currentQuestion">1</span> of <span id="totalQuestions">5</span></div>
+            </div>
+            
+            <div class="question-container">
+                <img id="questionImage" src="" alt="Question">
+            </div>
+            
+            <div class="options-grid" id="optionsGrid">
+                <!-- MCQ Options (for Section 1) -->
+                <div id="mcqOptions" style="display: none;">
+                    <div class="mcq-grid">
+                        <button class="option-btn" onclick="selectAnswer('A')">A</button>
+                        <button class="option-btn" onclick="selectAnswer('B')">B</button>
+                        <button class="option-btn" onclick="selectAnswer('C')">C</button>
+                        <button class="option-btn" onclick="selectAnswer('D')">D</button>
+                    </div>
+                </div>
+                
+                <!-- Numerical Input (for Section 2) -->
+                <div id="numericalInput" style="display: none;">
+                    <div class="numpad-container">
+                        <div class="numpad-display">
+                            <input type="text" id="numericalAnswer" placeholder="Enter your answer" readonly>
+                        </div>
+                        <div class="numpad-grid">
+                            <button class="numpad-btn" onclick="addNumber('1')">1</button>
+                            <button class="numpad-btn" onclick="addNumber('2')">2</button>
+                            <button class="numpad-btn" onclick="addNumber('3')">3</button>
+                            <button class="numpad-btn" onclick="addNumber('4')">4</button>
+                            <button class="numpad-btn" onclick="addNumber('5')">5</button>
+                            <button class="numpad-btn" onclick="addNumber('6')">6</button>
+                            <button class="numpad-btn" onclick="addNumber('7')">7</button>
+                            <button class="numpad-btn" onclick="addNumber('8')">8</button>
+                            <button class="numpad-btn" onclick="addNumber('9')">9</button>
+                            <button class="numpad-btn" onclick="addNumber('0')">0</button>
+                            <button class="numpad-btn clear-btn" onclick="clearNumerical()">C</button>
+                            <button class="numpad-btn backspace-btn" onclick="backspaceNumerical()">⌫</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="submitBtn" class="btn" style="display:block;margin:30px auto 0 auto;" disabled onclick="submitAnswer()">Submit Answer</button>
+        </div>
+
+        <!-- Results View -->
+        <div id="resultsView" class="view">
+            <div class="results-container">
+                <h2>🏆 Battle Results</h2>
+                <div class="leaderboard" id="leaderboard"></div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="showHome()">Exit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading View -->
+        <div id="loadingView" class="view">
+            <div class="loading">Loading</div>
+        </div>
+    </div>
+
+        <script>
+        // Firebase configuration - Replace with your config
+        const firebaseConfig = {
+      apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+      authDomain: "practiso-9b3dd.firebaseapp.com",
+      projectId: "practiso-9b3dd",
+      storageBucket: "practiso-9b3dd.appspot.com",
+      messagingSenderId: "263842850217",
+      appId: "1:263842850217:web:129de6a752bd8831b150b8",
+      measurementId: "G-CG44V5WG0G"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Global variables
+        let currentUser = null;
+        let currentRoomId = null;
+        let currentRoomData = null;
+        let roomListener = null;
+        let battleTimer = null;
+        let timeLeft = 60;
+        let selectedAnswer = null;
+        let hasSubmitted = false;
+        let answerStartTime = null;
+        let waitingForOthers = false;
+        // Add global variables to track last question index and timer state
+        let lastQuestionIndex = null;
+        let timerStarted = false;
+
+        // Check authentication
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // User is signed in
+                const email = user.email;
+                var welcomeMsg = document.getElementById('welcome-message');
+                if (welcomeMsg) {
+                  welcomeMsg.textContent = `WELCOME, ${email.toUpperCase()}`;
+                }
+                
+                // Update sidebar email
+                const userEmailDiv = document.getElementById('user-email');
+                if (userEmailDiv) {
+                    userEmailDiv.textContent = email;
+                }
+                
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.className = 'logout-btn';
+                logoutBtn.style.backgroundColor = '#dc3545';
+                logoutBtn.style.color = 'white';
+                logoutBtn.onclick = () => {
+                  auth.signOut().catch((error) => {
+                    console.error("Error signing out:", error);
+                  });
+                };
+
+                currentUser = user;
+                // Check if username is set in Firestore
+                const userDocRef = db.collection('users').doc(user.uid);
+                const userDoc = await userDocRef.get();
+                let username;
+                if (!userDoc.exists || !userDoc.data().username) {
+                    // Prompt for username
+                    do {
+                        username = prompt('Set your username (this will be visible to others):');
+                        if (username) username = username.trim();
+                    } while (!username);
+                    // Save to Firestore
+                    await userDocRef.set({
+                        username: username,
+                        email: user.email
+                    }, { merge: true });
+                } else {
+                    username = userDoc.data().username;
+                }
+                // Set displayName for use in battles
+                currentUser.displayName = username;
+                checkUrlParams();
+            } else {
+                var welcomeMsg = document.getElementById('welcome-message');
+                if (welcomeMsg) {
+                  welcomeMsg.textContent = 'WELCOME';
+                }
+                logoutBtn.textContent = 'Sign In';
+                logoutBtn.className = 'logout-btn'; 
+                logoutBtn.style.backgroundColor = '#00ff00';
+                logoutBtn.style.color = '#000';
+                logoutBtn.onclick = () => {
+                  window.location.href = `login.html?redirect=battles.html`;
+                };
+                // Don't redirect automatically - let users view the page
+                // They will be redirected when they try to create/join a room
+            }
+        });
+
+        // Check URL parameters for room join
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomCode = urlParams.get('room');
+            if (roomCode) {
+                if (!currentUser) {
+                    // User is not signed in, redirect to login with room code
+                    window.location.href = `login.html?redirect=battles.html?room=${roomCode}`;
+                    return;
+                }
+                document.getElementById('roomCodeInput').value = roomCode;
+                showJoinRoom();
+            }
+        }
+
+        // View management
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function showHome() {
+            showView('homeView');
+            cleanupListeners();
+        }
+
+        function showCreateRoom() {
+            if (!currentUser) {
+                // User is not signed in, redirect to login
+                window.location.href = 'login.html?redirect=battles.html';
+                return;
+            }
+            showView('createRoomView');
+        }
+
+        function showJoinRoom() {
+            if (!currentUser) {
+                // User is not signed in, redirect to login
+                window.location.href = 'login.html?redirect=battles.html';
+                return;
+            }
+            showView('joinRoomView');
+        }
+
+        function showLoading() {
+            showView('loadingView');
+        }
+
+        // Create room form handler
+        document.getElementById('createRoomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            // Fetch username from Firestore
+            const userDocRef = db.collection('users').doc(currentUser.uid);
+            const userDoc = await userDocRef.get();
+            let username = (userDoc.exists && userDoc.data().username) ? userDoc.data().username : (currentUser.displayName || 'Anonymous');
+
+            const settings = {
+                subject: document.getElementById('subject').value,
+                section: document.getElementById('section').value,
+                questionCount: parseInt(document.getElementById('questionCount').value),
+                timePerQuestion: 60
+            };
+
+            try {
+                const roomCode = generateRoomCode();
+                const roomData = {
+                    roomCode,
+                    createdBy: currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'waiting',
+                    settings,
+                    players: [{
+                        userId: currentUser.uid,
+                        displayName: username,
+                        photoURL: currentUser.photoURL || '',
+                        score: 0,
+                        answers: [],
+                        joinedAt: Date.now(),
+                        isReady: false
+                    }],
+                    currentQuestionIndex: 0,
+                    questions: []
+                };
+
+                const docRef = await db.collection('battleRooms').add(roomData);
+                currentRoomId = docRef.id;
+                
+                // Update URL
+                window.history.pushState({}, '', `?room=${roomCode}`);
+                
+                enterLobby(docRef.id, roomCode);
+            } catch (error) {
+                console.error('Error creating room:', error);
+                showNotification('Failed to create room. Please try again.', 'error');
+                showHome();
+            }
+        });
+
+        // Join room form handler
+        document.getElementById('joinRoomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            // Fetch username from Firestore
+            const userDocRef = db.collection('users').doc(currentUser.uid);
+            const userDoc = await userDocRef.get();
+            let username = (userDoc.exists && userDoc.data().username) ? userDoc.data().username : (currentUser.displayName || 'Anonymous');
+
+            const roomCode = document.getElementById('roomCodeInput').value.toUpperCase();
+
+            try {
+                const roomsQuery = await db.collection('battleRooms')
+                    .where('roomCode', '==', roomCode)
+                    .where('status', 'in', ['waiting', 'active'])
+                    .get();
+
+                if (roomsQuery.empty) {
+                    showNotification('Room not found or already completed', 'error');
+                    showJoinRoom();
+                    return;
+                }
+
+                const roomDoc = roomsQuery.docs[0];
+                const roomData = roomDoc.data();
+                currentRoomId = roomDoc.id;
+
+                // Check if user already in room
+                const existingPlayer = roomData.players.find(p => p.userId === currentUser.uid);
+                
+                if (!existingPlayer) {
+                    // Add player to room
+                    await roomDoc.ref.update({
+                        players: firebase.firestore.FieldValue.arrayUnion({
+                            userId: currentUser.uid,
+                            displayName: username,
+                            photoURL: currentUser.photoURL || '',
+                            score: 0,
+                            answers: [],
+                            joinedAt: Date.now(),
+                            isReady: false
+                        })
+                    });
+                }
+
+                // Update URL
+                window.history.pushState({}, '', `?room=${roomCode}`);
+                
+                enterLobby(roomDoc.id, roomCode);
+            } catch (error) {
+                console.error('Error joining room:', error);
+                showNotification('Failed to join room. Please try again.', 'error');
+                showJoinRoom();
+            }
+        });
+
+        // Enter lobby
+        function enterLobby(roomId, roomCode) {
+            currentRoomId = roomId;
+            document.getElementById('roomCodeDisplay').textContent = roomCode;
+            
+            // Set up real-time listener
+            roomListener = db.collection('battleRooms').doc(roomId)
+                .onSnapshot((doc) => {
+                    if (!doc.exists) {
+                        showNotification('Room was deleted', 'error');
+                        showHome();
+                        return;
+                    }
+
+                    const previousRoomData = currentRoomData;
+                    currentRoomData = doc.data();
+                    
+                    // Handle "all answered" notification
+                    if (currentRoomData.allAnswered && 
+                        (!previousRoomData || !previousRoomData.allAnswered) &&
+                        currentRoomData.status === 'active') {
+                        showNotification('All players have answered. Moving to next question...', 'success');
+                    }
+                    
+                    if (currentRoomData.status === 'active') {
+                        enterBattle();
+                    } else if (currentRoomData.status === 'completed') {
+                        showResults();
+                    } else {
+                        updateLobby();
+                    }
+                });
+
+            showView('lobbyView');
+        }
+
+        // Update lobby UI
+        function updateLobby() {
+            // Update settings display
+            const settings = currentRoomData.settings;
+            document.getElementById('settingsDisplay').innerHTML = `
+                <p><strong>Subject:</strong> ${settings.subject.charAt(0).toUpperCase() + settings.subject.slice(1)}</p>
+                <p><strong>Section:</strong> ${settings.section.toUpperCase()}</p>
+                <p><strong>Questions:</strong> ${settings.questionCount}</p>
+            `;
+
+            // Update players list
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '';
+            
+            currentRoomData.players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.innerHTML = `
+                    <img src="${player.photoURL || 'https://via.placeholder.com/40'}" alt="${player.displayName}">
+                    <span class="name">${player.displayName}</span>
+                    <span class="status ${player.isReady ? 'ready' : 'not-ready'}">
+                        ${player.isReady ? 'Ready' : 'Not Ready'}
+                    </span>
+                `;
+                playersList.appendChild(playerCard);
+            });
+
+            // Update ready button
+            const currentPlayer = currentRoomData.players.find(p => p.userId === currentUser.uid);
+            document.getElementById('readyBtn').textContent = currentPlayer?.isReady ? 'Not Ready' : 'Ready';
+
+            // Show start button if creator and all ready
+            const isCreator = currentUser.uid === currentRoomData.createdBy;
+            const allReady = currentRoomData.players.length >= 2 && 
+                           currentRoomData.players.every(p => p.isReady);
+            
+            document.getElementById('startBtn').style.display = 
+                (isCreator && allReady) ? 'inline-block' : 'none';
+        }
+
+        // Toggle ready status
+        async function toggleReady() {
+            const playerIndex = currentRoomData.players.findIndex(p => p.userId === currentUser.uid);
+            const updatedPlayers = [...currentRoomData.players];
+            updatedPlayers[playerIndex].isReady = !updatedPlayers[playerIndex].isReady;
+
+            await db.collection('battleRooms').doc(currentRoomId).update({
+                players: updatedPlayers
+            });
+        }
+
+        // Start battle
+        async function startBattle() {
+            try {
+                showNotification('Loading questions...', 'info');
+                
+                // Fetch random questions
+                const questions = await fetchRandomQuestions(currentRoomData.settings);
+                
+                if (!questions || questions.length === 0) {
+                    throw new Error('No questions available for the selected subject and section');
+                }
+                
+                await db.collection('battleRooms').doc(currentRoomId).update({
+                    status: 'active',
+                    questions: questions,
+                    startedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('Battle started!', 'success');
+            } catch (error) {
+                console.error('Error starting battle:', error);
+                const errorMessage = error.message.includes('No questions found') 
+                    ? `No questions available for ${currentRoomData.settings.subject} ${currentRoomData.settings.section}. Please try a different subject or section.`
+                    : 'Failed to start battle. Please try again.';
+                showNotification(errorMessage, 'error');
+            }
+        }
+
+        // Fetch random questions from all shifts and sections
+        async function fetchRandomQuestions(settings) {
+            const { subject, section, questionCount } = settings;
+            
+            try {
+                console.log(`Fetching questions for ${subject} ${section} from all shifts...`);
+                
+                const allQuestions = [];
+                
+                // Define the paths to search - focus on the most likely paths first
+                const searchPaths = [
+                    // 2025 paths
+                    { year: '2025', month: 'april', shifts: ['2-april-evening', '2-april-morning', '3-april-evening', '3-april-morning', '4-april-evening', '4-april-morning', '7-april-evening', '7-april-morning', '8-april-evening'] },
+                    // 2024 paths (if available)
+                    { year: '2024', month: 'april', shifts: ['1-april-morning', '1-april-evening'] }
+                ];
+                
+                for (const path of searchPaths) {
+                    const { year, month, shifts } = path;
+                    
+                    for (const shift of shifts) {
+                        try {
+                            console.log(`Checking ${year}/${month}/${shift}`);
+                            
+                            // Handle subject name variations
+                            const subjectNames = [subject];
+                            if (subject === 'math') subjectNames.push('maths');
+                            if (subject === 'maths') subjectNames.push('math');
+                            
+                            for (const subjectName of subjectNames) {
+                                try {
+                                    // Get sections for this subject
+                                    const sectionsSnapshot = await db.collection('years').doc(year).collection(month)
+                                        .doc(shift).collection('subjects').doc(subjectName).collection('sections').get();
+                                    
+                                    console.log(`Available sections for ${subjectName} in ${year}/${month}/${shift}:`, sectionsSnapshot.docs.map(doc => doc.id));
+                                    
+                                    for (const sectionDoc of sectionsSnapshot.docs) {
+                                        const sectionName = sectionDoc.id;
+                                        console.log(`Checking section: ${sectionName}`);
+                                        
+                                        // Check if this section matches what we're looking for
+                                        let sectionMatches = false;
+                                        
+                                        if (section === 'mcq') {
+                                            // For MCQ, only match sec-1-mcq sections
+                                            sectionMatches = 
+                                                sectionName === 'sec-1-mcq' ||
+                                                sectionName === 'mcq';
+                                        } else if (section === 'numerical') {
+                                            // For numerical, only match sec-2-num sections
+                                            sectionMatches = 
+                                                sectionName === 'sec-2-num' ||
+                                                sectionName === 'sec-1-num' ||
+                                                sectionName === 'sec-3-num' ||
+                                                sectionName === 'numerical';
+                                        } else {
+                                            // Fallback for other section types
+                                            sectionMatches = 
+                                                sectionName === `sec-1-${section}` ||
+                                                sectionName === `sec-2-${section}` ||
+                                                sectionName === `sec-3-${section}` ||
+                                                sectionName === section;
+                                        }
+                                        
+                                        console.log(`Section matching: looking for "${section}", found "${sectionName}", matches: ${sectionMatches}`);
+                                        
+                                        if (sectionMatches) {
+                                            console.log(`Found matching section: ${sectionName}`);
+                                            
+                                            try {
+                                                // Get questions from this section
+                                                const questionsSnapshot = await db.collection('years').doc(year).collection(month)
+                                                    .doc(shift).collection('subjects').doc(subjectName)
+                                                    .collection('sections').doc(sectionName).collection('questions').get();
+                                                
+                                                console.log(`Questions snapshot for ${year}/${month}/${shift}/${subjectName}/${sectionName}:`, {
+                                                    empty: questionsSnapshot.empty,
+                                                    size: questionsSnapshot.size,
+                                                    docs: questionsSnapshot.docs.map(doc => doc.id)
+                                                });
+                                                
+                                                if (!questionsSnapshot.empty) {
+                                                    const questions = questionsSnapshot.docs.map(doc => ({
+                                                        id: doc.id,
+                                                        ...doc.data(),
+                                                        source: `${year}/${month}/${shift}/${subjectName}/${sectionName}`
+                                                    }));
+                                                    
+                                                    allQuestions.push(...questions);
+                                                    console.log(`Added ${questions.length} questions from ${year}/${month}/${shift}/${subjectName}/${sectionName}`);
+                                                } else {
+                                                    console.log(`No questions found in ${year}/${month}/${shift}/${subjectName}/${sectionName}`);
+                                                }
+                                            } catch (error) {
+                                                console.log(`Error getting questions from ${sectionName}:`, error);
+                                                continue;
+                                            }
+                                        }
+                                    }
+                                } catch (error) {
+                                    console.log(`Error processing subject ${subjectName} in ${shift}:`, error);
+                                    continue;
+                                }
+                            }
+                        } catch (error) {
+                            console.log(`Error processing shift ${shift}:`, error);
+                            continue;
+                        }
+                    }
+                }
+                
+                console.log(`Total questions found: ${allQuestions.length}`);
+                
+                if (allQuestions.length === 0) {
+                    throw new Error(`No questions found for ${subject} ${section} in any shift`);
+                }
+                
+                // Remove duplicates based on question content
+                const uniqueQuestions = [];
+                const seenQuestions = new Set();
+                
+                for (const question of allQuestions) {
+                    const questionKey = question.question || question.id;
+                    if (!seenQuestions.has(questionKey)) {
+                        seenQuestions.add(questionKey);
+                        uniqueQuestions.push(question);
+                    }
+                }
+                
+                console.log(`Unique questions after deduplication: ${uniqueQuestions.length}`);
+                
+                // Check if we have enough questions after deduplication
+                if (uniqueQuestions.length < questionCount) {
+                    console.log(`Warning: Only found ${uniqueQuestions.length} unique questions, but requested ${questionCount}`);
+                    // Continue searching if we don't have enough questions
+                    if (uniqueQuestions.length === 0) {
+                        throw new Error(`No questions found for ${subject} ${section} in any shift`);
+                    }
+                }
+                
+                // Shuffle and pick random questions
+                const shuffled = uniqueQuestions.sort(() => 0.5 - Math.random());
+                const selectedQuestions = shuffled.slice(0, questionCount);
+                
+                console.log(`Selected ${selectedQuestions.length} questions from ${uniqueQuestions.length} total unique questions`);
+                
+                return selectedQuestions;
+                
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+                showNotification(`Failed to load ${subject} questions. Please try again.`, 'error');
+                throw error;
+            }
+        }
+
+        // Enter battle arena
+        function enterBattle() {
+            showView('battleView');
+            document.getElementById('totalQuestions').textContent = currentRoomData.questions.length;
+            if (lastQuestionIndex !== currentRoomData.currentQuestionIndex) {
+                displayQuestion();
+                lastQuestionIndex = currentRoomData.currentQuestionIndex;
+                timerStarted = false;
+            }
+            updateScores();
+            // Do not call startTimer here; timer is managed in displayQuestion
+        }
+
+        // Display current question
+        function displayQuestion() {
+            const question = currentRoomData.questions[currentRoomData.currentQuestionIndex];
+            document.getElementById('currentQuestion').textContent = currentRoomData.currentQuestionIndex + 1;
+            document.getElementById('questionImage').src = question.question || '';
+            
+            // Reset per-question state
+            if (lastQuestionIndex !== currentRoomData.currentQuestionIndex) {
+                selectedAnswer = null;
+                hasSubmitted = false;
+                timerStarted = false;
+                // Clear numerical input
+                const numericalInput = document.getElementById('numericalAnswer');
+                if (numericalInput) numericalInput.value = '';
+            }
+            lastQuestionIndex = currentRoomData.currentQuestionIndex;
+            
+            // Check if this user has already answered this question
+            const player = currentRoomData.players.find(p => p.userId === currentUser.uid);
+            const alreadyAnswered = player && player.answers && player.answers.length > currentRoomData.currentQuestionIndex;
+            let userAnswer = null;
+            if (alreadyAnswered) {
+                userAnswer = player.answers[currentRoomData.currentQuestionIndex].answer;
+            }
+            
+            // Determine if this is a numerical question based on the question source
+            const isNumerical = question.source && (
+                question.source.includes('sec-2-num') ||
+                question.source.includes('sec-1-num') ||
+                question.source.includes('sec-3-num')
+            );
+            
+            // Show/hide appropriate input interface
+            const mcqOptions = document.getElementById('mcqOptions');
+            const numericalInput = document.getElementById('numericalInput');
+            const optionsGrid = document.getElementById('optionsGrid');
+            
+            if (isNumerical) {
+                mcqOptions.style.display = 'none';
+                numericalInput.style.display = 'block';
+                optionsGrid.classList.add('numerical-mode');
+                optionsGrid.classList.remove('mcq-mode');
+                
+                // Handle numerical input state
+                const numInput = document.getElementById('numericalAnswer');
+                if (alreadyAnswered) {
+                    numInput.value = userAnswer || '';
+                    numInput.disabled = true;
+                    // Disable all numpad buttons
+                    document.querySelectorAll('.numpad-btn').forEach(btn => btn.disabled = true);
+                } else {
+                    numInput.disabled = false;
+                    // Enable all numpad buttons
+                    document.querySelectorAll('.numpad-btn').forEach(btn => btn.disabled = false);
+                }
+            } else {
+                mcqOptions.style.display = 'block';
+                numericalInput.style.display = 'none';
+                optionsGrid.classList.remove('numerical-mode');
+                optionsGrid.classList.add('mcq-mode');
+                
+                // Handle MCQ options state
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.className = 'option-btn';
+                    if (alreadyAnswered) {
+                        btn.disabled = true;
+                        if (userAnswer === btn.textContent) {
+                            btn.classList.add('selected');
+                        }
+                    } else {
+                        btn.disabled = false;
+                        if (selectedAnswer === btn.textContent) {
+                            btn.classList.add('selected');
+                        }
+                    }
+                });
+            }
+            
+            // Reset submit button
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                if (isNumerical) {
+                    const numValue = document.getElementById('numericalAnswer').value.trim();
+                    submitBtn.disabled = alreadyAnswered || !numValue;
+                } else {
+                    submitBtn.disabled = alreadyAnswered || !selectedAnswer;
+                }
+            }
+            
+            // Hide waiting message if present
+            let waitMsg = document.getElementById('waitMsg');
+            if (waitMsg) waitMsg.style.display = 'none';
+            // Hide next message if present
+            let nextMsg = document.getElementById('nextMsg');
+            if (nextMsg) nextMsg.style.display = 'none';
+            
+            // Start timer only if not already answered and not already started
+            if (!alreadyAnswered && !timerStarted) {
+                startTimer();
+                answerStartTime = Date.now();
+                timerStarted = true;
+            }
+        }
+
+        // Add waiting message to battleView if not present
+        // Remove old message divs - we'll use notifications instead
+        const oldWaitMsg = document.getElementById('waitMsg');
+        if (oldWaitMsg) oldWaitMsg.remove();
+        const oldNextMsg = document.getElementById('nextMsg');
+        if (oldNextMsg) oldNextMsg.remove();
+
+        function startTimer() {
+            timeLeft = 120;
+            updateTimerDisplay();
+            if (battleTimer) clearInterval(battleTimer);
+            battleTimer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(battleTimer);
+                    if (!hasSubmitted) {
+                        submitAnswer();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timerDisplay').textContent = timeLeft;
+        }
+
+        // Select answer
+        function selectAnswer(option) {
+            if (hasSubmitted) return;
+            
+            selectedAnswer = option;
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                btn.disabled = false;
+                if (btn.textContent === option) btn.classList.add('selected');
+            });
+            // Enable submit button
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) submitBtn.disabled = false;
+        }
+
+        // Submit answer
+        async function submitAnswer() {
+            console.log('submitAnswer called', { hasSubmitted, selectedAnswer });
+            if (hasSubmitted) return;
+            hasSubmitted = true;
+            
+            clearInterval(battleTimer);
+            timerStarted = false;
+            
+            const question = currentRoomData.questions[currentRoomData.currentQuestionIndex];
+            const isNumerical = question.source && question.source.includes('sec-2-num');
+            
+            let finalAnswer;
+            let isCorrect;
+            
+            if (isNumerical) {
+                // Handle numerical answer
+                const numericalValue = document.getElementById('numericalAnswer').value.trim();
+                finalAnswer = numericalValue;
+                
+                // Compare numerical answers with tolerance (same logic as examui.html)
+                const userNum = parseFloat(numericalValue);
+                const correctNum = parseFloat(question.correct);
+                isCorrect = !isNaN(userNum) && !isNaN(correctNum) && Math.abs(userNum - correctNum) < 0.0001;
+                
+                console.log('Numerical answer:', { userNum, correctNum, isCorrect });
+            } else {
+                // Handle MCQ answer
+                const optionMap = { A: "1", B: "2", C: "3", D: "4" };
+                const selected = (selectedAnswer || '').toString().trim().toUpperCase();
+                const mappedSelected = optionMap[selected] || selected;
+                const correct = (question.correct || '').toString().trim();
+                finalAnswer = selectedAnswer;
+                isCorrect = mappedSelected === correct;
+                
+                console.log('MCQ answer:', { selected, mappedSelected, correct, isCorrect });
+            }
+            
+            const playerIndex = currentRoomData.players.findIndex(p => p.userId === currentUser.uid);
+            const updatedPlayers = [...currentRoomData.players];
+            
+            // Calculate time taken
+            const timeTaken = Math.min(120, Math.round((Date.now() - answerStartTime) / 1000));
+            
+            // Update player's answer and score
+            updatedPlayers[playerIndex].answers.push({
+                questionId: question.id,
+                answer: finalAnswer,
+                isCorrect: isCorrect,
+                timeTaken: timeTaken
+            });
+            
+            // Disable input interface for this user
+            if (isNumerical) {
+                document.getElementById('numericalAnswer').disabled = true;
+                document.querySelectorAll('.numpad-btn').forEach(btn => btn.disabled = true);
+            } else {
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.disabled = true;
+                    // Highlight the selected answer for this user
+                    if (btn.textContent === selectedAnswer) {
+                        btn.classList.add('selected');
+                    }
+                });
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) submitBtn.disabled = true;
+            
+            // Show waiting message
+            waitingForOthers = true;
+            showNotification('Waiting for other players to answer...', 'info');
+            
+            // Update database
+            await db.collection('battleRooms').doc(currentRoomId).update({
+                players: updatedPlayers
+            });
+            
+            // Now, check if all players have answered for this question
+            checkAllPlayersAnswered();
+        }
+
+        async function checkAllPlayersAnswered() {
+            // Refetch room data to get latest answers
+            const roomDoc = await db.collection('battleRooms').doc(currentRoomId).get();
+            const roomData = roomDoc.data();
+            const qIndex = roomData.currentQuestionIndex;
+            const allAnswered = roomData.players.every(p => (p.answers.length > qIndex));
+            if (allAnswered) {
+                // Update room to trigger notification for all players
+                await db.collection('battleRooms').doc(currentRoomId).update({
+                    allAnswered: true,
+                    allAnsweredAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                setTimeout(() => {
+                    if (currentRoomData.currentQuestionIndex < currentRoomData.questions.length - 1) {
+                        moveToNextQuestion();
+                    } else {
+                        endBattle();
+                    }
+                }, 1500); // Slightly longer delay for feedback
+            }
+            // Otherwise, do nothing (wait for others)
+        }
+
+        // Move to next question
+        async function moveToNextQuestion() {
+            await db.collection('battleRooms').doc(currentRoomId).update({
+                currentQuestionIndex: currentRoomData.currentQuestionIndex + 1,
+                allAnswered: false,
+                allAnsweredAt: null
+            });
+        }
+
+        // End battle
+        async function endBattle() {
+            clearInterval(battleTimer);
+            // Only one client should write results
+            const resultsRef = db.collection('battleResults');
+            const existing = await resultsRef.where('roomId', '==', currentRoomId).limit(1).get();
+            if (!existing.empty) {
+                // Results already exist, just show them
+                showResults();
+                return;
+            }
+            // Calculate final results
+            const results = currentRoomData.players.map(player => {
+                const correctAnswers = player.answers.filter(a => a.isCorrect).length;
+                const totalTime = player.answers.reduce((sum, a) => sum + (a.timeTaken || 120), 0);
+                const avgTime = player.answers.length > 0 ? totalTime / player.answers.length : 120;
+                return {
+                    ...player,
+                    correctAnswers,
+                    avgTime,
+                    accuracy: player.answers.length > 0 ? (correctAnswers / currentRoomData.questions.length) * 100 : 0
+                };
+            }).sort((a, b) => {
+                if (b.correctAnswers !== a.correctAnswers) return b.correctAnswers - a.correctAnswers;
+                return a.avgTime - b.avgTime;
+            });
+            // Save results
+            await resultsRef.add({
+                roomId: currentRoomId,
+                players: results,
+                completedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            // Update room status
+            await db.collection('battleRooms').doc(currentRoomId).update({
+                status: 'completed',
+                endedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showResults();
+        }
+
+        // Update scores display (removed since player score container was removed)
+        function updateScores() {
+            // Function kept for compatibility but no longer updates UI
+            // Player scores are now only shown in results
+        }
+
+        // Show results
+        async function showResults() {
+            showView('resultsView');
+            
+            // Get results from database
+            const resultsQuery = await db.collection('battleResults')
+                .where('roomId', '==', currentRoomId)
+                .orderBy('completedAt', 'desc')
+                .limit(1)
+                .get();
+            
+            if (!resultsQuery.empty) {
+                const results = resultsQuery.docs[0].data();
+                displayLeaderboard(results.players);
+            }
+        }
+
+        // Display leaderboard
+        function displayLeaderboard(players) {
+            const leaderboard = document.getElementById('leaderboard');
+            leaderboard.innerHTML = '';
+            // 5. Update displayLeaderboard to handle missing currentRoomData gracefully
+            let questionCount = (window.currentRoomData && currentRoomData.questions) ? currentRoomData.questions.length : (players[0]?.answers?.length || 0);
+            players.forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = `leaderboard-item ${index === 0 ? 'winner' : ''}`;
+                item.innerHTML = `
+                    <div class="rank">#${index + 1}</div>
+                    <div class="details">
+                        <div><strong>${player.displayName}</strong></div>
+                        <div>Correct: ${player.correctAnswers}/${questionCount} | Avg Time: ${player.avgTime ? player.avgTime.toFixed(1) : '-'}s | Accuracy: ${player.accuracy ? player.accuracy.toFixed(0) : '-'}%</div>
+                    </div>
+                `;
+                leaderboard.appendChild(item);
+                
+                // Show "YOU WON" notification for the first-place player
+                if (index === 0 && player.userId === currentUser.uid) {
+                    setTimeout(() => {
+                        showNotification('🎉 YOU WON! 🎉', 'success');
+                    }, 1000); // Show after 1 second to let results load
+                }
+            });
+        }
+
+
+
+        // Leave lobby
+        async function leaveLobby() {
+            if (confirm('Are you sure you want to leave the battle?')) {
+                try {
+                    // Remove player from room
+                    const updatedPlayers = currentRoomData.players.filter(p => p.userId !== currentUser.uid);
+                    
+                    if (updatedPlayers.length === 0) {
+                        // Delete room if last player
+                        await db.collection('battleRooms').doc(currentRoomId).delete();
+                    } else {
+                        // Update room with remaining players
+                        await db.collection('battleRooms').doc(currentRoomId).update({
+                            players: updatedPlayers
+                        });
+                    }
+                    
+                    showHome();
+                } catch (error) {
+                    console.error('Error leaving room:', error);
+                }
+            }
+        }
+
+        // Numpad functions
+        function addNumber(num) {
+            const input = document.getElementById('numericalAnswer');
+            if (input && !input.disabled) {
+                input.value += num;
+                updateSubmitButton();
+            }
+        }
+
+        function clearNumerical() {
+            const input = document.getElementById('numericalAnswer');
+            if (input && !input.disabled) {
+                input.value = '';
+                updateSubmitButton();
+            }
+        }
+
+        function backspaceNumerical() {
+            const input = document.getElementById('numericalAnswer');
+            if (input && !input.disabled) {
+                input.value = input.value.slice(0, -1);
+                updateSubmitButton();
+            }
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            const question = currentRoomData.questions[currentRoomData.currentQuestionIndex];
+            const isNumerical = question.source && question.source.includes('sec-2-num');
+            
+            if (submitBtn) {
+                if (isNumerical) {
+                    const numValue = document.getElementById('numericalAnswer').value.trim();
+                    submitBtn.disabled = !numValue;
+                } else {
+                    submitBtn.disabled = !selectedAnswer;
+                }
+            }
+        }
+
+        // Copy room code
+        function copyRoomCode() {
+            const code = document.getElementById('roomCodeDisplay').textContent;
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(code).then(() => {
+                    showNotification('Room code copied!', 'success');
+                }).catch((err) => {
+                    console.error('Failed to copy using clipboard API:', err);
+                    fallbackCopyTextToClipboard(code);
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyTextToClipboard(code);
+            }
+        }
+
+        // Fallback copy function for older browsers
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            
+            // Avoid scrolling to bottom
+            textArea.style.top = '0';
+            textArea.style.left = '0';
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('Room code copied!', 'success');
+                } else {
+                    showNotification('Failed to copy room code. Please copy manually: ' + text, 'error');
+                }
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                showNotification('Failed to copy room code. Please copy manually: ' + text, 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+
+
+        // Debug function to check available subjects and sections
+        async function debugFirestoreStructure() {
+            if (!currentUser) return;
+            
+            try {
+                console.log('Checking Firestore structure...');
+                
+                // Check what years are available
+                const yearsSnapshot = await db.collection('years').get();
+                console.log('Available years:', yearsSnapshot.docs.map(doc => doc.id));
+                
+                if (yearsSnapshot.docs.length > 0) {
+                    const year = yearsSnapshot.docs[0].id;
+                    const monthsSnapshot = await db.collection('years').doc(year).collection('april').get();
+                    console.log(`Available shifts in ${year}/april:`, monthsSnapshot.docs.map(doc => doc.id));
+                    
+                    if (monthsSnapshot.docs.length > 0) {
+                        const shift = monthsSnapshot.docs[0].id;
+                        const subjectsSnapshot = await db.collection('years').doc(year).collection('april')
+                            .doc(shift).collection('subjects').get();
+                        console.log(`Available subjects in ${year}/april/${shift}:`, subjectsSnapshot.docs.map(doc => doc.id));
+                        
+                        if (subjectsSnapshot.docs.length > 0) {
+                            const subject = subjectsSnapshot.docs[0].id;
+                            const sectionsSnapshot = await db.collection('years').doc(year).collection('april')
+                                .doc(shift).collection('subjects').doc(subject).collection('sections').get();
+                            console.log(`Available sections for ${subject}:`, sectionsSnapshot.docs.map(doc => doc.id));
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking Firestore structure:', error);
+            }
+        }
+
+        // Custom notification function
+        function showNotification(message, type = 'info') {
+            // Remove any existing notifications
+            const existingNotifications = document.querySelectorAll('.custom-notification');
+            existingNotifications.forEach(notification => notification.remove());
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `custom-notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            
+            // Add to body
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Generate random room code
+        function generateRoomCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        // Cleanup listeners
+        function cleanupListeners() {
+            if (roomListener) {
+                roomListener();
+                roomListener = null;
+            }
+            if (battleTimer) {
+                clearInterval(battleTimer);
+                battleTimer = null;
+            }
+            currentRoomId = null;
+            currentRoomData = null;
+            
+            // Clear URL params
+            window.history.pushState({}, '', window.location.pathname);
+        }
+
+        // Handle browser back button
+        window.addEventListener('popstate', (event) => {
+            cleanupListeners();
+            showHome();
+        });
+
+        // Prevent accidental page refresh during battle
+        window.addEventListener('beforeunload', (e) => {
+            if (currentRoomData && currentRoomData.status === 'active') {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Auto-update scores during battle (removed since player score container was removed)
+        // setInterval(() => {
+        //     if (currentRoomData && currentRoomData.status === 'active') {
+        //         updateScores();
+        //     }
+        // }, 1000);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', submitAnswer);
+            }
+        });
+
+        // Add authentication and sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hamburger menu logic for auth state
+            if (window.firebase && firebase.auth) {
+                firebase.auth().onAuthStateChanged(function(user) {
+                    document.body.classList.add('navbar-auth-ready');
+                    if (user) {
+                        document.getElementById('signin-btn-link').classList.remove('auth-show');
+                        document.getElementById('hamburger-menu').classList.add('auth-show');
+                    } else {
+                        document.getElementById('signin-btn-link').classList.add('auth-show');
+                        document.getElementById('hamburger-menu').classList.remove('auth-show');
+                    }
+                });
+            }
+            
+            // Sidebar logic
+            const hamburger = document.getElementById('hamburger-menu');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarClose = document.getElementById('sidebar-close');
+            
+            hamburger && hamburger.addEventListener('click', function() {
+                sidebar.style.display = 'block';
+                setTimeout(() => { sidebar.style.transform = 'translateX(0)'; }, 10);
+            });
+            
+            sidebarClose && sidebarClose.addEventListener('click', function() {
+                sidebar.style.transform = 'translateX(100%)';
+                setTimeout(() => { sidebar.style.display = 'none'; }, 300);
+            });
+            
+            // Close sidebar on outside click
+            document.addEventListener('mousedown', function(e) {
+                if (sidebar.style.display === 'block' && !sidebar.contains(e.target) && e.target !== hamburger) {
+                    sidebar.style.transform = 'translateX(100%)';
+                    setTimeout(() => { sidebar.style.display = 'none'; }, 300);
+                }
+            });
+            
+            // Set sign-in link redirect
+            var signinBtnLink = document.getElementById('signin-btn-link');
+            if (signinBtnLink) {
+                signinBtnLink.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname);
+            }
+        });
+    </script>
+</body>
+</html>
