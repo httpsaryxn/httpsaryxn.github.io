@@ -19,7 +19,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="practisoV2logo.png" type="image/png"/>
+   <link rel="icon" href="practisoV2logo.png" type="image/png"/>
+
     <style>
         body {
             background-color: #161616;
@@ -272,10 +273,44 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        // Check if user is already authenticated when page loads
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("User already authenticated on page load:", user.email);
+                // For Google users, email is already verified
+                // For email/password users, check email verification
+                if (user.providerData.length > 0 && user.providerData[0].providerId === 'google.com') {
+                    // Google user - no email verification needed
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect');
+                    if (redirectUrl) {
+                        window.location.replace(decodeURIComponent(redirectUrl));
+                    } else {
+                        window.location.replace("/dashboard.html");
+                    }
+                } else if (user.emailVerified) {
+                    // Email/password user with verified email
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect');
+                    if (redirectUrl) {
+                        window.location.replace(decodeURIComponent(redirectUrl));
+                    } else {
+                        window.location.replace("/dashboard.html");
+                    }
+                } else {
+                    // Email/password user with unverified email
+                    console.log("Email not verified for:", user.email);
+                }
+            } else {
+                console.log("No user authenticated on page load");
+            }
+        });
+
         // Handle redirect result for mobile Google sign-in
         auth.getRedirectResult().then((result) => {
             if (result && result.user) {
                 // User successfully signed in via redirect
+                console.log("Redirect result successful:", result.user.email);
                 const urlParams = new URLSearchParams(window.location.search);
                 const redirectUrl = urlParams.get('redirect');
                 if (redirectUrl) {
@@ -286,24 +321,13 @@
             }
         }).catch((error) => {
             // Handle redirect errors
+            console.error("Redirect error:", error);
             if (error.code === 'auth/account-exists-with-different-credential') {
                 alert("An account already exists with the same email address but different sign-in credentials.");
             } else if (error.code === 'auth/invalid-credential') {
                 alert("The sign-in method is not available. Please try again.");
             } else {
                 console.error("Redirect error:", error);
-            }
-        });
-
-        auth.onAuthStateChanged((user) => {
-            if (user && user.emailVerified) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirectUrl = urlParams.get('redirect');
-                if (redirectUrl) {
-                    window.location.replace(decodeURIComponent(redirectUrl));
-                } else {
-                    window.location.replace("/dashboard.html");
-                }
             }
         });
 
@@ -385,19 +409,24 @@ function signInWithGoogle() {
     // Check if it's a mobile device
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
+    console.log("Signing in with Google, isMobile:", isMobile);
+    
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(() => {
         if (isMobile) {
           // Use redirect for mobile devices
+          console.log("Using redirect method for mobile");
           return auth.signInWithRedirect(provider);
         } else {
           // Use popup for desktop devices
+          console.log("Using popup method for desktop");
           return auth.signInWithPopup(provider);
         }
       })
       .then((result) => {
         // This will only execute for popup method (desktop)
         if (result) {
+          console.log("Popup sign-in successful:", result.user.email);
           const urlParams = new URLSearchParams(window.location.search);
           const redirectUrl = urlParams.get('redirect');
           if (redirectUrl) {
@@ -408,6 +437,7 @@ function signInWithGoogle() {
         }
       })
       .catch((error) => {
+        console.error("Google sign-in error:", error);
         if (error.code === 'auth/popup-closed-by-user') {
             alert("You closed the popup before completing sign-in. Please try again.");
         } else {
@@ -433,4 +463,3 @@ function signInWithGoogle() {
     </script>
 </body>
 </html>
-
