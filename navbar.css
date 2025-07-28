@@ -1,0 +1,379 @@
+.static-navbar {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 75px;
+  background: rgba(20, 20, 20, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.static-navbar-logo {
+  height: 68px;
+  width: auto;
+  display: block;
+}
+/* From Uiverse.io by augustin_4687 */ 
+.button {
+  --stone-50: #fafaf9;
+  --stone-800: #292524;
+  --yellow-400: #facc15;
+
+  font-family: "Rubik", sans-serif;
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  line-height: 1;
+  font-size: 0.95rem;
+  border-radius: 0.9rem;
+  outline: 2px solid transparent;
+  outline-offset: 6px;
+  color: var(--stone-50);
+  min-width: 90px;
+  max-width: 140px;
+  height: 38px;
+  margin-top: 3px;
+
+  &:active {
+    outline-color: var(--yellow-400);
+  }
+
+  &:focus-visible {
+    outline-color: var(--yellow-400);
+    outline-style: dashed;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    height: 200%;
+    max-height: 100px;
+    aspect-ratio: 1;
+    margin: auto;
+    background: white;
+    clip-path: polygon(
+      100% 50%,
+      91.48% 56.57%,
+      97.55% 65.45%,
+      87.42% 69.07%,
+      90.45% 79.39%,
+      79.7% 79.7%,
+      79.39% 90.45%,
+      69.07% 87.42%,
+      65.45% 97.55%,
+      56.57% 91.48%,
+      50% 100%,
+      43.43% 91.48%,
+      34.55% 97.55%,
+      30.93% 87.42%,
+      20.61% 90.45%,
+      20.3% 79.7%,
+      9.55% 79.39%,
+      12.58% 69.07%,
+      2.45% 65.45%,
+      8.52% 56.57%,
+      0% 50%,
+      8.52% 43.43%,
+      2.45% 34.55%,
+      12.58% 30.93%,
+      9.55% 20.61%,
+      20.3% 20.3%,
+      20.61% 9.55%,
+      30.93% 12.58%,
+      34.55% 2.45%,
+      43.43% 8.52%,
+      50% 0%,
+      56.57% 8.52%,
+      65.45% 2.45%,
+      69.07% 12.58%,
+      79.39% 9.55%,
+      79.7% 20.3%,
+      90.45% 20.61%,
+      87.42% 30.93%,
+      97.55% 34.55%,
+      91.48% 43.43%
+    );
+
+    animation: star-rotate 4s linear infinite;
+    opacity: 0.1;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  & > div {
+    padding: 2px;
+    border-radius: 1rem;
+    background-color: var(--yellow-400);
+    transform: translate(-4px, -4px);
+    transition: all 150ms ease;
+    box-shadow:
+      0.5px 0.5px 0 0 var(--yellow-400),
+      1px 1px 0 0 var(--yellow-400),
+      1.5px 1.5px 0 0 var(--yellow-400),
+      2px 2px 0 0 var(--yellow-400),
+      2.5px 2.5px 0 0 var(--yellow-400),
+      3px 3px 0 0 var(--yellow-400),
+      0 0 0 2px var(--stone-800),
+      0.5px 0.5px 0 2px var(--stone-800),
+      1px 1px 0 2px var(--stone-800),
+      1.5px 1.5px 0 2px var(--stone-800),
+      2px 2px 0 2px var(--stone-800),
+      2.5px 2.5px 0 2px var(--stone-800),
+      3px 3px 0 2px var(--stone-800),
+      3.5px 3.5px 0 2px var(--stone-800),
+      4px 4px 0 2px var(--stone-800),
+      0 0 0 4px var(--stone-50),
+      0.5px 0.5px 0 4px var(--stone-50),
+      1px 1px 0 4px var(--stone-50),
+      1.5px 1.5px 0 4px var(--stone-50),
+      2px 2px 0 4px var(--stone-50),
+      2.5px 2.5px 0 4px var(--stone-50),
+      3px 3px 0 4px var(--stone-50),
+      3.5px 3.5px 0 4px var(--stone-50),
+      4px 4px 0 4px var(--stone-50);
+
+    .button:hover & {
+      transform: translate(0, 0);
+      box-shadow:
+        0 0 0 0 var(--yellow-400),
+        0 0 0 0 var(--yellow-400),
+        0 0 0 0 var(--yellow-400),
+        0 0 0 0 var(--yellow-400),
+        0 0 0 0 var(--yellow-400),
+        0 0 0 0 var(--yellow-400),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 2px var(--stone-800),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50),
+        0 0 0 4px var(--stone-50);
+    }
+
+    & > div {
+      position: relative;
+      pointer-events: none;
+      border-radius: calc(1rem - 2px);
+      background-color: var(--stone-800);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 1rem;
+        opacity: 0.1;
+        background-image: radial-gradient(
+            rgb(255 255 255 / 80%) 20%,
+            transparent 20%
+          ),
+          radial-gradient(rgb(255 255 255 / 100%) 20%, transparent 20%);
+        background-position:
+          0 0,
+          4px 4px;
+        background-size: 8px 8px;
+        mix-blend-mode: hard-light;
+        box-shadow: inset 0 0 0 1px var(--stone-800);
+        animation: dots 0.4s infinite linear;
+        transition: opacity 150ms ease;
+      }
+
+      & > div {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        gap: 0.25rem;
+        filter: drop-shadow(0 -1px 0 var(--stone-800));
+
+        &:hover {
+          filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.1));
+        }
+
+        &:active {
+          transform: translateY(2px);
+        }
+      }
+    }
+  }
+}
+
+.button > div > div > div {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+}
+
+@keyframes star-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dots {
+  0% {
+    background-position:
+      0 0,
+      4px 4px;
+  }
+  100% {
+    background-position:
+      8px 0,
+      12px 4px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .button {
+    &:active,
+    &:focus-visible {
+      outline-color: var(--yellow-400);
+    }
+  }
+}
+
+
+.navbar-wrapper {
+  margin-top: 66px;
+}
+
+
+nav.main-navbar {
+  background: rgba(79, 79, 79, 0.15);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(88px) saturate(180%);
+  /* box-shadow: 0 8px 32px 0 rgba(157, 157, 157, 0.421); */
+  border-radius: 15px;
+  border: 0.5px solid rgba(255, 255, 255, 0.067);
+  height: 9vh;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 50vw;
+  margin: -30px auto 0 auto;
+  left: 0;
+  right: 0;
+  z-index: 9;
+  position: relative;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.079) 2px, transparent 2.5px);
+  background-size: 22px 22px;
+  animation: move-dots 4s linear infinite;
+  box-shadow: 0 4px 24px 0 rgba(188,4,255,0.25), 0 0 0 2px rgb(255, 105, 180), 0 1.5px 24px 0 rgba(0,255,255,0.10);
+}
+
+.main-navbar-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 32px;
+  max-width: 900px;
+  height: 64px;
+  gap: 62px;
+}
+
+.main-navbar-item {
+  flex: 1 1 0;
+  text-align: center;
+}
+.main-navbar-item.left {
+  text-align: left;
+}
+.main-navbar-item.right {
+  text-align: right;
+}
+.main-navbar-item.center {
+  text-align: center;
+}
+
+.main-navbar-item a {
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.18rem;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: 24px;
+  transition: color 0.24s;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.main-navbar-item a.active,
+.main-navbar-item a.home-link.active {
+  background: linear-gradient(90deg, #ff69b4 0%, #bc04ff 100%);
+  color: #fff !important;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px 0 rgba(188,4,255,0.10);
+  position: relative;
+  padding: 10px 28px;
+  font-weight: 700;
+}
+
+.main-navbar-item a.home-link {
+  font-weight: 700;
+  color: #fff;
+}
+
+.main-navbar-item a:hover {
+  color: #cccccc;
+  background: none;
+}
+
+#hamburger-menu {
+  color: #fff !important;
+}
+#hamburger-menu:hover, #hamburger-menu:focus {
+  color: #eee !important;
+}
+
+@media (max-width: 700px) {
+  .main-navbar {
+    width: 98vw !important;
+    max-width: 98vw !important;
+    left: 1vw;
+    right: 1vw;
+    margin: 0px auto 0 auto;
+  }
+  .main-navbar-list {
+    padding: 0 4px;
+    height: 48px;
+    gap: 12px;
+  }
+  .main-navbar-item a, .main-navbar-item a.home-link {
+    font-size: 0.98rem;
+    padding: 6px 8px;
+  }
+}
+@keyframes move-dots {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 44px 44px;
+  }
+} 
