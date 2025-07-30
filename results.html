@@ -1,21 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WVQ53GG33W"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-WVQ53GG33W');
-</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test Results</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <link rel="icon" href="practisoV2logo.png" type="image/png"/>
+
   <style>
     body {
       margin: 0;
@@ -43,7 +36,7 @@
     }
 
     .header h1 {
-      color: #2d70b6;
+      color: #ff69b4;
       margin: 0;
       font-size: 24px;
       text-align: left;
@@ -55,7 +48,7 @@
     }
 
     .header-btn {
-      background: #2d70b6;
+      background: #ff69b4;
       color: white;
       border: none;
       padding: 8px 16px;
@@ -67,10 +60,13 @@
     }
 
     .header-btn:hover {
-      background: #1e4f8a;
+      background: #ff69b4c0;
     }
 
     @media (max-width: 768px) {
+      body{
+        overflow-x: hidden;
+      }
       .header {
         padding: 15px;
         flex-direction: column;
@@ -93,11 +89,10 @@
     }
 
     .test-info {
-      background: #232323;
+      background: #282828;
       padding: 20px;
       border-radius: 8px;
       margin-bottom: 20px;
-      box-shadow: 0 0 15px rgba(2, 255, 91, 0.679);
       border: 1px solid rgba(2, 255, 175, 0.1);
     }
 
@@ -105,7 +100,7 @@
       color: #fff;
       margin: 0 0 15px 0;
       font-size: 20px;
-      border-bottom: 2px solid #2d70b6;
+      border-bottom: 2px solid #ff69b4;
       padding-bottom: 10px;
     }
 
@@ -116,10 +111,10 @@
     }
 
     .info-item {
-      background: #232323;
+      background: #282828;
       padding: 15px;
       border-radius: 6px;
-      /* border: 0.5px solid rgb(2, 255, 175); */
+      border: 1px solid gray;
 
     }
 
@@ -149,7 +144,7 @@
       font-weight: 600;
       margin-bottom: 15px;
       padding-bottom: 10px;
-      border-bottom: 2px solid #2d70b6;
+      border-bottom: 2px solid #ff69b4;
     }
 
     .section-results {
@@ -159,14 +154,14 @@
     }
 
     .result-card {
-      background: #232323;
+      background: #282828;
       padding: 20px;
       border-radius: 6px;
 
     }
 
     .result-card h3 {
-      color: #2d70b6;
+      color: #ff69b4;
       margin: 0 0 15px 0;
       font-size: 18px;
     }
@@ -178,7 +173,7 @@
     }
 
     .stat-item {
-      background: #232323;
+      background: #282828;
       padding: 15px;
       border-radius: 6px;
       text-align: center;
@@ -209,7 +204,7 @@
     }
 
     .total-score {
-      background: #2d70b6;
+      background: #ff69b4;
       color: #fff;
       padding: 20px;
       border-radius: 8px;
@@ -236,18 +231,102 @@
     }
 
     .answers-review {
-      background: #232323;
+      background: #282828;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       margin-top: 20px;
+      max-height: 60vh;
+      overflow-y: auto;
     }
 
     .tab-content {
       display: none;
       padding: 20px;
-      background: #232323;
+      background: #282828;
       border-radius: 8px;
+    }
+    .info-accuracy-wrapper {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    #test-info, #accuracy-section {
+      flex: 1 1 0;
+      max-width: 50%;
+      min-width: 260px;
+      background: #282828;
+      padding: 20px;
+      border-radius: 8px; 
+      border: 1px solid rgba(2, 255, 175, 0.1);
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    #accuracy-section h2 {
+      color: #fff;
+      font-size: 20px;
+      margin: 0 0 15px 0;
+      border-bottom: 2px solid #ff69b4;
+      padding-bottom: 10px;
+    }
+    .accuracy-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .accuracy-list li {
+      margin-bottom: 10px;
+      font-size: 16px;
+      border: 1px solid gray;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 13px;
+      
+    }
+    .accuracy-label {
+      color: #aaa;
+      margin-right: 8px;
+    }
+    .accuracy-value {
+      color: #fff;
+      font-weight: 600;
+    }
+    @media (max-width: 900px) {
+      .info-accuracy-wrapper {
+        flex-direction: column;
+        gap: 0;
+        align-items: center;
+      }
+      #test-info, #accuracy-section {
+        max-width: 100%;
+        margin-top: 0;
+        margin-bottom: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #test-info .info-grid, #accuracy-section ul {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      #results-content table {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        width: 95vw;
+        min-width: 600px;
+      }
+      #results-content thead, #results-content tbody {
+        text-align: center;
+      }
+      .answers-review {
+        overflow-x: auto;
+        max-width: 100vw;
+      }
     }
   </style>
 </head>
@@ -259,25 +338,33 @@
         <button class="header-btn" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
       </div>
     </div>
-    <div id="test-info" class="test-info">
-      <h2>Test Information</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Test Date</div>
-          <div class="info-value" id="test-date">-</div>
+    <div class="info-accuracy-wrapper">
+      <div id="test-info" class="test-info">
+        <h2>Test Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Test Date</div>
+            <div class="info-value" id="test-date">-</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Duration</div>
+            <div class="info-value" id="test-duration">-</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Total Questions</div>
+            <div class="info-value" id="total-questions">75</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Questions Attempted</div>
+            <div class="info-value" id="questions-attempted">-</div>
+          </div>
         </div>
-        <div class="info-item">
-          <div class="info-label">Duration</div>
-          <div class="info-value" id="test-duration">-</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Total Questions</div>
-          <div class="info-value" id="total-questions">75</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Questions Attempted</div>
-          <div class="info-value" id="questions-attempted">-</div>
-        </div>
+      </div>
+      <div id="accuracy-section">
+        <h2>Accuracy</h2>
+        <ul class="accuracy-list" id="accuracy-list">
+          <li>Loading accuracy...</li>
+        </ul>
       </div>
     </div>
     <div id="results-content">
@@ -324,12 +411,16 @@
     async function loadResults(userId) {
       const resultsContent = document.getElementById('results-content');
       let totalScore = 0;
+      let accuracyData = {};
+      let subjectwiseStats = {};
+      let totalCorrect = 0, totalAttempted = 0;
 
       try {
         console.log('Loading results for user:', userId);
         
-        // Get the selected test ID from localStorage
-        const selectedTestId = localStorage.getItem('selected_test_id');
+        // Get test_id from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedTestId = urlParams.get('test_id');
         
         let testDoc;
         if (selectedTestId) {
@@ -339,9 +430,6 @@
             .collection('test_attempts')
             .doc(selectedTestId)
             .get();
-            
-          // Clear the selected test ID
-          localStorage.removeItem('selected_test_id');
         } else {
           // If no specific test was selected, fetch the most recent test
           const recentTestsSnapshot = await db.collection('user_test_responses')
@@ -350,7 +438,7 @@
             .orderBy('submittedAt', 'desc')
             .limit(1)
             .get();
-            
+          
           if (recentTestsSnapshot.empty) {
             showError('No test attempts found. Please complete a test first.');
             return;
@@ -376,77 +464,30 @@
         // Clear loading message
         resultsContent.innerHTML = '';
 
-        // Process each section
-        for (const [sectionKey, sectionData] of Object.entries(responseData.sections)) {
-          console.log('Processing section:', sectionKey, sectionData);
-          const [subject, section] = sectionKey.split('-');
-          const subjectSection = document.createElement('div');
-          subjectSection.className = 'subject-section';
-          
-          const sectionTitle = subject.charAt(0).toUpperCase() + subject.slice(1);
-          
-          // Determine if this is a numerical section based on question IDs
-          const firstQuestionId = sectionData.questions[0]?.questionId;
-          const isNumerical = firstQuestionId && parseInt(firstQuestionId.substring(1)) > 20;
-          const sectionType = isNumerical ? 'Numerical' : 'MCQ';
-          const sectionNumber = isNumerical ? '2' : '1';
-          
-          // Create a consistent section key for UI elements
-          const uiSectionKey = `${subject}-sec-${sectionNumber}-${isNumerical ? 'num' : 'mcq'}`;
-          
-          console.log('Section type detection:', {
-            sectionKey,
-            sectionData,
-            firstQuestionId,
-            isNumerical,
-            sectionType,
-            sectionNumber,
-            uiSectionKey
-          });
-          
-          subjectSection.innerHTML = `
-            <div class="subject-title">${sectionTitle}</div>
-            <div class="section-results">
-              <div class="result-card">
-                <h3>Section ${sectionNumber} (${sectionType})</h3>
-                <div class="stats-grid">
-                  <div class="stat-item">
-                    <div class="stat-label">Correct Answers</div>
-                    <div class="stat-value correct" id="${uiSectionKey}-correct">0</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">Incorrect Answers</div>
-                    <div class="stat-value incorrect" id="${uiSectionKey}-incorrect">0</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">Unattempted</div>
-                    <div class="stat-value unattempted" id="${uiSectionKey}-unattempted">0</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">Section Score</div>
-                    <div class="stat-value" id="${uiSectionKey}-score">0</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-          resultsContent.appendChild(subjectSection);
+        // Subject summary table
+        const subjectSummaryTable = document.createElement('table');
+        subjectSummaryTable.style.width = '100%';
+        subjectSummaryTable.style.borderCollapse = 'collapse';
+        subjectSummaryTable.style.background = '#232323';
+        subjectSummaryTable.style.color = '#fff';
+        subjectSummaryTable.style.marginBottom = '30px';
+        subjectSummaryTable.innerHTML = `
+          <thead>
+            <tr style="background:#232323; color:#fff;">
+              <th style="padding:10px; border:1px solid #444;">Subject</th>
+              <th style="padding:10px; border:1px solid #444;">Score</th>
+              <th style="padding:10px; border:1px solid #444;">Attempted</th>
+              <th style="padding:10px; border:1px solid #444;">Correct</th>
+              <th style="padding:10px; border:1px solid #444;">Incorrect</th>
+              <th style="padding:10px; border:1px solid #444;">Unattempted</th>
+            </tr>
+          </thead>
+          <tbody id="subject-summary-body"></tbody>
+        `;
+        resultsContent.appendChild(subjectSummaryTable);
 
-          try {
-            // Calculate section score
-            const sectionScore = await calculateSectionScore(subject, `sec-${sectionNumber}-${isNumerical ? 'num' : 'mcq'}`, sectionData.questions, responseData.testInfo, uiSectionKey);
-            totalScore += sectionScore;
-            console.log(`Section ${uiSectionKey} score:`, sectionScore);
-          } catch (sectionError) {
-            console.error('Error calculating section score:', sectionError);
-            console.error('Section details:', { 
-              subject, 
-              section: `sec-${sectionNumber}-${isNumerical ? 'num' : 'mcq'}`, 
-              questions: sectionData.questions, 
-              testInfo: responseData.testInfo 
-            });
-          }
-        }
+        // Process each section
+        // (Removed: rendering of individual subject-section cards below the table)
 
         // Add total score after all sections are processed
         const totalScoreDiv = document.createElement('div');
@@ -749,7 +790,7 @@
           display: block;
           margin: 20px auto;
           padding: 10px 20px;
-          background: #2d70b6;
+          background: #ff69b4;
           color: #fff;
           border: none;
           border-radius: 5px;
@@ -758,6 +799,157 @@
         `;
         backButton.onclick = () => window.location.href = 'dashboard.html';
         resultsContent.appendChild(backButton);
+
+        // Calculate overall and subjectwise accuracy
+        totalCorrect = Object.values(subjectwiseStats).reduce((a, s) => a + s.correct, 0);
+        totalAttempted = Object.values(subjectwiseStats).reduce((a, s) => a + s.attempted, 0);
+        const overallAccuracy = totalAttempted > 0 ? (totalCorrect / totalAttempted) * 100 : 0;
+        // Render accuracy section
+        const accuracyList = document.getElementById('accuracy-list');
+        accuracyList.innerHTML = '';
+        const overallLi = document.createElement('li');
+        overallLi.innerHTML = `<span class="accuracy-label">Overall Accuracy:</span> <span class="accuracy-value">${overallAccuracy.toFixed(1)}%</span>`;
+        accuracyList.appendChild(overallLi);
+        for (const [subject, stats] of Object.entries(subjectwiseStats)) {
+          const subjectAcc = stats.attempted > 0 ? (stats.correct / stats.attempted) * 100 : 0;
+          const li = document.createElement('li');
+          li.innerHTML = `<span class="accuracy-label">${subject.charAt(0).toUpperCase() + subject.slice(1)}:</span> <span class="accuracy-value">${subjectAcc.toFixed(1)}%</span>`;
+          accuracyList.appendChild(li);
+        }
+
+        // Log actual section keys for debugging
+        console.log('Actual section keys:', Object.keys(responseData.sections));
+
+        // Always show 6 fixed rows for each subject-section
+        const sectionKeys = [
+          { key: 'physics-sec-1-mcq', label: 'Physics – Single Option', subjects: ['physics'], section: 'sec-1', type: 'mcq' },
+          { key: 'physics-sec-2-num', label: 'Physics – Integer type', subjects: ['physics'], section: 'sec-2', type: 'num' },
+          { key: 'chemistry-sec-1-mcq', label: 'Chemistry – Single Option', subjects: ['chemistry'], section: 'sec-1', type: 'mcq' },
+          { key: 'chemistry-sec-2-num', label: 'Chemistry – Integer type', subjects: ['chemistry'], section: 'sec-2', type: 'num' },
+          { key: 'math-sec-1-mcq', label: 'Math – Single Option', subjects: ['math', 'maths'], section: 'sec-1', type: 'mcq' },
+          { key: 'math-sec-2-num', label: 'Math – Integer type', subjects: ['math', 'maths'], section: 'sec-2', type: 'num' },
+        ];
+        const sectionStats = {};
+        for (const { key } of sectionKeys) {
+          sectionStats[key] = { score: 0, attempted: 0, correct: 0, incorrect: 0, unattempted: 0 };
+        }
+
+        // Async: fetch correct answers for each section and compute stats
+        let totalScoreAsync = 0;
+        let totalCorrectAsync = 0;
+        let totalAttemptedAsync = 0;
+        let subjectwiseStatsAsync = { physics: {correct:0, attempted:0}, chemistry: {correct:0, attempted:0}, math: {correct:0, attempted:0}, maths: {correct:0, attempted:0} };
+        await Promise.all(sectionKeys.map(async ({ key, subjects, section, type }) => {
+          // Try both 'math' and 'maths' as subject keys if needed
+          let found = false;
+          let usedSubject = null;
+          let dataKey = null;
+          let sectionData = null;
+          for (const subject of subjects) {
+            const matchingKeys = Object.keys(responseData.sections).filter(k => k.startsWith(`${subject}-${section}`));
+            if (matchingKeys.length > 0) {
+              dataKey = matchingKeys[0];
+              sectionData = responseData.sections[dataKey];
+              usedSubject = subject;
+              found = true;
+              break;
+            }
+          }
+          if (!found) return;
+          // Try both possible Firestore paths for correct answers
+          let fullSection = `${section}-${type}`;
+          let path = `years/${responseData.testInfo.year}/${responseData.testInfo.month}/${responseData.testInfo.shift}/subjects/${usedSubject}/sections/${fullSection}/questions`;
+          let correctAnswersMap = {};
+          let questionsSnapshot = null;
+          try {
+            questionsSnapshot = await db.collection(path).get();
+          } catch (e) { /* ignore */ }
+          if (!questionsSnapshot || questionsSnapshot.empty) {
+            // Try alternate path (e.g., sec-1 if sec-1-mcq fails)
+            fullSection = section;
+            path = `years/${responseData.testInfo.year}/${responseData.testInfo.month}/${responseData.testInfo.shift}/subjects/${usedSubject}/sections/${fullSection}/questions`;
+            try {
+              questionsSnapshot = await db.collection(path).get();
+            } catch (e) { /* ignore */ }
+          }
+          if (questionsSnapshot && !questionsSnapshot.empty) {
+            questionsSnapshot.forEach(doc => {
+              correctAnswersMap[doc.id] = doc.data().correct;
+            });
+          }
+          // Compute stats
+          sectionData.questions.forEach(q => {
+            if (!q.response) {
+              sectionStats[key].unattempted++;
+            } else {
+              sectionStats[key].attempted++;
+              totalAttemptedAsync++;
+              subjectwiseStatsAsync[usedSubject].attempted++;
+              const correctAnswer = correctAnswersMap[q.questionId];
+              const isNumerical = q.questionId && parseInt(q.questionId.substring(1)) > 20;
+              if (isNumerical) {
+                const userNum = parseFloat(q.response);
+                const correctNum = parseFloat(correctAnswer);
+                if (!isNaN(userNum) && !isNaN(correctNum) && Math.abs(userNum - correctNum) < 0.0001) {
+                  sectionStats[key].correct++;
+                  sectionStats[key].score += 4;
+                  totalScoreAsync += 4;
+                  totalCorrectAsync++;
+                  subjectwiseStatsAsync[usedSubject].correct++;
+                } else {
+                  sectionStats[key].incorrect++;
+                  sectionStats[key].score -= 1;
+                  totalScoreAsync -= 1;
+                }
+              } else {
+                const userResponseNum = q.response.charCodeAt(0) - 64;
+                const correctAnswerNum = parseInt(correctAnswer);
+                if (userResponseNum === correctAnswerNum) {
+                  sectionStats[key].correct++;
+                  sectionStats[key].score += 4;
+                  totalScoreAsync += 4;
+                  totalCorrectAsync++;
+                  subjectwiseStatsAsync[usedSubject].correct++;
+                } else {
+                  sectionStats[key].incorrect++;
+                  sectionStats[key].score -= 1;
+                  totalScoreAsync -= 1;
+                }
+              }
+            }
+          });
+        }));
+
+        const subjectSummaryBody = subjectSummaryTable.querySelector('#subject-summary-body');
+        for (const { key, label } of sectionKeys) {
+          const stats = sectionStats[key];
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="padding:8px; border:1px solid #444;">${label}</td>
+            <td style="padding:8px; border:1px solid #444;">${stats.score.toFixed(2)}</td>
+            <td style="padding:8px; border:1px solid #444;">${stats.attempted}</td>
+            <td style="padding:8px; border:1px solid #444;">${stats.correct}</td>
+            <td style="padding:8px; border:1px solid #444;">${stats.incorrect}</td>
+            <td style="padding:8px; border:1px solid #444;">${stats.unattempted}</td>
+          `;
+          subjectSummaryBody.appendChild(tr);
+        }
+
+        // Update total score and accuracy using async-calculated values
+        document.querySelector('.total-score').textContent = `Total Score: ${totalScoreAsync}`;
+        const accuracyListFinal = document.getElementById('accuracy-list');
+        accuracyListFinal.innerHTML = '';
+        const overallAccuracyFinal = totalAttemptedAsync > 0 ? (totalCorrectAsync / totalAttemptedAsync) * 100 : 0;
+        const overallLiFinal = document.createElement('li');
+        overallLiFinal.innerHTML = `<span class="accuracy-label">Overall Accuracy:</span> <span class="accuracy-value">${overallAccuracyFinal.toFixed(1)}%</span>`;
+        accuracyListFinal.appendChild(overallLiFinal);
+        for (const subject of ['physics','chemistry','math']) {
+          const stats = subjectwiseStatsAsync[subject];
+          const subjectAcc = stats.attempted > 0 ? (stats.correct / stats.attempted) * 100 : 0;
+          const li = document.createElement('li');
+          li.innerHTML = `<span class="accuracy-label">${subject.charAt(0).toUpperCase() + subject.slice(1)}:</span> <span class="accuracy-value">${subjectAcc.toFixed(1)}%</span>`;
+          accuracyListFinal.appendChild(li);
+        }
 
       } catch (error) {
         console.error('Error loading results:', error);
@@ -770,7 +962,7 @@
       }
     }
 
-    async function calculateSectionScore(subject, section, questions, testInfo, uiSectionKey) {
+    async function calculateSectionScore(subject, section, questions, testInfo, uiSectionKey, subjectwiseStats) {
       try {
         console.log('Calculating score for:', { subject, section, questions, testInfo, uiSectionKey });
         const { year, month, shift } = testInfo;
@@ -829,11 +1021,14 @@
             isNumerical
           });
 
+          if (!subjectwiseStats[subject]) subjectwiseStats[subject] = {correct: 0, attempted: 0};
+
           if (!userResponse) {
             // Question was not attempted
             unattempted++;
             console.log('Question unattempted');
           } else {
+            subjectwiseStats[subject].attempted++;
             // For numerical questions (Section 2)
             if (isNumerical) {
               // Convert both to numbers and compare
@@ -859,6 +1054,7 @@
                 
                 if (isEqual) {
                   correct++;
+                  subjectwiseStats[subject].correct++;
                   score += 4;
                   console.log('Correct numerical answer: +4');
                 } else {
@@ -887,6 +1083,7 @@
               
               if (userResponseNum === correctAnswerNum) {
                 correct++;
+                subjectwiseStats[subject].correct++;
                 score += 4;
                 console.log('Correct MCQ answer: +4');
               } else {
