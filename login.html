@@ -242,114 +242,318 @@
     </div>
 
     <!-- Firebase Core -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
 
-  <!-- Supabase (ESM import via module) -->
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js'
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+  authDomain: "practiso-9b3dd.firebaseapp.com",
+  projectId: "practiso-9b3dd",
+  storageBucket: "practiso-9b3dd.firebasestorage.app",
+  messagingSenderId: "263842850217",
+  appId: "1:263842850217:web:129de6a752bd8831b150b8",
+  measurementId: "G-CG44V5WG0G"
+        };
 
-    // 🔁 Replace with your actual Supabase credentials
-    const SUPABASE_URL = 'https://vgoalbrdqftymknwtmqg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnb2FsYnJkcWZ0eW1rbnd0bXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM4NzMxNTEsImV4cCI6MjA2OTQ0OTE1MX0.C3MSgtMe1UZ-gxsCKXZNDFIlIHTmYLpTyq8NX8MkfAM';
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
-      authDomain: "practiso-9b3dd.firebaseapp.com",
-      projectId: "practiso-9b3dd",
-      storageBucket: "practiso-9b3dd.firebasestorage.app",
-      messagingSenderId: "263842850217",
-      appId: "1:263842850217:web:129de6a752bd8831b150b8",
-      measurementId: "G-CG44V5WG0G"
-    };
+        // FIXED MOBILE GOOGLE AUTHENTICATION LOGIC
+        let authInitialized = false;
+        let redirectHandled = false;
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+        // Initialize authentication properly
+        function initializeAuth() {
+            if (authInitialized) return;
+            authInitialized = true;
 
-    // -------- Email/Password logic (Firebase) -------- //
-    function handleEmailSignup() {
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => auth.createUserWithEmailAndPassword(email, password))
-        .then(userCredential => {
-          return userCredential.user.sendEmailVerification().then(() => {
-            alert("Verification email sent!");
-            showForm("login");
-            return auth.signOut();
-          });
-        })
-        .catch(error => alert(error.message));
-    }
-
-    function handleEmailLogin() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => auth.signInWithEmailAndPassword(email, password))
-        .then(userCredential => userCredential.user.reload().then(() => userCredential.user))
-        .then(user => {
-          if (!user.emailVerified) {
-            alert("Please verify your email first.");
-            auth.signOut();
-            throw new Error("Email not verified");
-          }
-          const redirectUrl = new URLSearchParams(window.location.search).get("redirect");
-          window.location.replace(redirectUrl || "/dashboard.html");
-        })
-        .catch(error => alert(error.message));
-    }
-
-    // -------- Supabase Google Sign-In -------- //
-    async function signInWithGoogle() {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin + "/login.html"
+            // Set persistence to LOCAL for better mobile experience
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .then(() => {
+                    console.log("Auth persistence set to LOCAL");
+                    handleRedirectResult();
+                })
+                .catch((error) => {
+                    console.error("Failed to set persistence:", error);
+                    handleRedirectResult();
+                });
         }
-      });
-      if (error) alert("Google login failed: " + error.message);
-    }
 
-    async function checkSupabaseSession() {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session && session.user) {
-        console.log("✅ Supabase Google login success:", session.user.email);
-        const redirectUrl = new URLSearchParams(window.location.search).get("redirect");
-        window.location.replace(redirectUrl || "/dashboard.html");
-      }
-    }
-
-    // -------- Events -------- //
-    document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
-    document.getElementById('googleSignupBtn').addEventListener('click', signInWithGoogle);
-
-    function showForm(form) {
-      ['login', 'signup'].forEach(f => {
-        document.getElementById(`${f}-form`).classList.remove('active');
-      });
-      document.getElementById(`${form}-form`).classList.add('active');
-      document.getElementById('login-tab').classList.toggle('active', form === 'login');
-      document.getElementById('signup-tab').classList.toggle('active', form === 'signup');
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      // Firebase check (email/password auth flow)
-      auth.onAuthStateChanged(user => {
-        if (user && user.emailVerified) {
-          const redirectUrl = new URLSearchParams(window.location.search).get("redirect");
-          window.location.replace(redirectUrl || "/dashboard.html");
+        // Handle redirect result with proper mobile logic
+        function handleRedirectResult() {
+            if (redirectHandled) return;
+            
+            auth.getRedirectResult()
+                .then((result) => {
+                    redirectHandled = true;
+                    
+                    if (result && result.user) {
+                        console.log("Google sign-in successful via redirect:", result.user.email);
+                        redirectToTarget();
+                    } else {
+                        console.log("No redirect result - checking current user");
+                        checkCurrentUser();
+                    }
+                })
+                .catch((error) => {
+                    redirectHandled = true;
+                    console.error("Redirect result error:", error);
+                    
+                    if (error.code === 'auth/unauthorized-domain') {
+                        alert("Domain not authorized. Please add " + window.location.hostname + " to Firebase Console > Authentication > Settings > Authorized domains");
+                    } else {
+                        console.error("Authentication error:", error);
+                    }
+                    
+                    checkCurrentUser();
+                });
         }
-      });
 
-      // Supabase check (Google only)
-      checkSupabaseSession();
-    });
+        // Check if user is already authenticated
+        function checkCurrentUser() {
+            const user = auth.currentUser;
+            if (user) {
+                console.log("User already authenticated:", user.email);
+                redirectToTarget();
+            } else {
+                console.log("No user authenticated");
+                setupAuthStateListener();
+            }
+        }
 
+        // Setup auth state listener for real-time updates
+        function setupAuthStateListener() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    console.log("Auth state changed - user authenticated:", user.email);
+                    redirectToTarget();
+                }
+            });
+        }
+
+        // Redirect to target page
+        function redirectToTarget() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+            
+            if (redirectUrl) {
+                console.log("Redirecting to:", decodeURIComponent(redirectUrl));
+                window.location.replace(decodeURIComponent(redirectUrl));
+            } else {
+                console.log("Redirecting to dashboard");
+                window.location.replace("/dashboard.html");
+            }
+        }
+
+        // Initialize auth when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            // Listen for auth state changes
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in
+                    redirectToTarget();
+                } else {
+                    // Not signed in, check for redirect result
+                    auth.getRedirectResult()
+                        .then((result) => {
+                            if (result && result.user) {
+                                redirectToTarget();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Redirect result error:", error);
+                        });
+                }
+            });
+        })
+        .catch((error) => {
+            console.error("Failed to set persistence:", error);
+        });
+});
+
+        function handleEmailSignup() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .then(() => {
+                    return auth.createUserWithEmailAndPassword(email, password)
+                })
+                .then((userCredential) => {
+                    return userCredential.user.sendEmailVerification().then(() => {
+                        alert("Verification email sent! Please check your inbox.");
+                        showForm('login');
+                        return auth.signOut();
+                    });
+                })
+                .catch((error) => {
+                    alert(getFriendlyError(error));
+                });
+        }
+
+        function handleEmailLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email) {
+        alert("Please enter your email first.");
+        return;
+    }
+
+    if (!password) {
+        alert("Please enter your password.");
+        return;
+    }
+
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            return auth.signInWithEmailAndPassword(email, password);
+        })
+        .then((userCredential) => {
+            return userCredential.user.reload().then(() => userCredential.user);
+        })
+        .then((user) => {
+            if (!user.emailVerified) {
+                alert("Please verify your email first.");
+                auth.signOut();
+                throw new Error("Email not verified");
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+            if (redirectUrl) {
+                window.location.replace(decodeURIComponent(redirectUrl));
+            } else {
+                window.location.replace("/dashboard.html");
+            }
+        })
+        .catch((error) => {
+            if (error.message !== "Email not verified") {
+                alert(getFriendlyError(error));
+            }
+        });
+}
+
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => auth.getRedirectResult())
+  .then((result) => {
+    console.log("Redirect result:", result);
+    if (result.user) {
+      alert("Signed in as: " + result.user.email);
+      redirectToTarget();
+    } else {
+      console.log("No user in redirect result");
+    }
+  })
+  .catch((error) => {
+    alert("Redirect result error: " + error.message);
+    console.error(error);
+  });
+
+auth.onAuthStateChanged((user) => {
+  console.log("Auth state changed:", user);
+  if (user) {
+    alert("Already signed in as: " + user.email);
+    redirectToTarget();
+  }
+});
+
+
+function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
     
+    // Mobile detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    console.log("=== GOOGLE SIGN-IN STARTED ===");
+    console.log("Is mobile device:", isMobile);
+    console.log("User agent:", navigator.userAgent);
+    console.log("Current URL:", window.location.href);
+    console.log("Firebase auth state before sign-in:", auth.currentUser ? auth.currentUser.email : 'null');
+    
+    // Set custom parameters for better mobile experience
+    provider.setCustomParameters({
+        prompt: 'select_account',
+        access_type: 'offline'
+    });
+    
+    // Add scopes
+    provider.addScope('email');
+    provider.addScope('profile');
+    
+    console.log("Provider configured with scopes:", provider.scopes);
+    console.log("Provider custom parameters:", provider.customParameters);
+    
+    if (isMobile) {
+        // Use redirect for mobile devices
+        console.log("🔄 Using redirect method for mobile");
+        console.log("About to call signInWithRedirect...");
+        
+        auth.signInWithRedirect(provider)
+            .then(() => {
+                console.log("✅ signInWithRedirect promise resolved successfully");
+                console.log("User should be redirected to Google OAuth page");
+                console.log("The page should now redirect to Google's OAuth page");
+            })
+            .catch((error) => {
+                console.error("❌ Redirect sign-in failed:", error);
+                console.error("Error code:", error.code);
+                console.error("Error message:", error.message);
+                console.error("Full error object:", error);
+                
+                if (error.code === 'auth/unauthorized-domain') {
+                    alert("Domain not authorized. Please add " + window.location.hostname + " to Firebase Console > Authentication > Settings > Authorized domains");
+                } else if (error.code === 'auth/network-request-failed') {
+                    alert("Network error. Please check your internet connection.");
+                } else {
+                    alert("Sign-in failed: " + error.message);
+                }
+            });
+    } else {
+        // Use popup for desktop
+        console.log("🪟 Using popup method for desktop");
+        console.log("About to call signInWithPopup...");
+        
+        auth.signInWithPopup(provider)
+            .then((result) => {
+                console.log("✅ Popup sign-in successful:", result.user.email);
+                redirectToTarget();
+            })
+            .catch((error) => {
+                console.error("❌ Popup sign-in failed:", error);
+                console.error("Error code:", error.code);
+                console.error("Error message:", error.message);
+                
+                if (error.code === 'auth/popup-blocked') {
+                    // Fallback to redirect if popup is blocked
+                    console.log("🔄 Popup blocked, trying redirect method...");
+                    auth.signInWithRedirect(provider);
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    alert("Domain not authorized. Please add " + window.location.hostname + " to Firebase Console > Authentication > Settings > Authorized domains");
+                } else {
+                    alert("Sign-in failed: " + error.message);
+                }
+            });
+    }
+}
+
+
+
+        document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
+        document.getElementById('googleSignupBtn').addEventListener('click', signInWithGoogle);
+
+        function getFriendlyError(error) {
+            switch (error.code) {
+                case 'auth/email-already-in-use': return 'Email is already registered.';
+                case 'auth/user-not-found': return 'No account found with this email.';
+                case 'auth/wrong-password': return 'Incorrect password.';
+                case 'auth/invalid-email': return 'Invalid email format.';
+                default: return error.message;
+            }
+        }
+
 
     </script>
 </body>
