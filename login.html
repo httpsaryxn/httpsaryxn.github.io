@@ -1,25 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WVQ53GG33W"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-WVQ53GG33W');
-</script>
-<meta name="description" content="A website that offers free PYQ as mock test for jee mains , jee advance , mhtcet exams in interactive CBT format that exactly matches the official NTA CBT format.">
-<meta name="keywords" content="JEE,CBT,JEE MAINS CBT,CBT INTERFACE,MOCK TEST,MOCK,CBT,COMPUTER BASED TEST,NTA,JEE MAINS,JEE ADVANCE,MHTCET,PYQ MOCK TEST,PYQ,TEST,PYQ CBT,">
-<meta name="robots" content="index, follow">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="language" content="English">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-   <link rel="icon" href="practisoV2logo.png" type="image/png"/>
+    <link rel="icon" href="practisoV2logo.png" type="image/png"/>
 
     <style>
         body {
@@ -256,210 +242,115 @@
     </div>
 
     <!-- Firebase Core -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
-  authDomain: "practiso-9b3dd.firebaseapp.com",
-  projectId: "practiso-9b3dd",
-  storageBucket: "practiso-9b3dd.firebasestorage.app",
-  messagingSenderId: "263842850217",
-  appId: "1:263842850217:web:129de6a752bd8831b150b8",
-  measurementId: "G-CG44V5WG0G"
-        };
+  <!-- Supabase (ESM import via module) -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js'
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+    // 🔁 Replace with your actual Supabase credentials
+    const SUPABASE_URL = 'https://vgoalbrdqftymknwtmqg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnb2FsYnJkcWZ0eW1rbnd0bXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM4NzMxNTEsImV4cCI6MjA2OTQ0OTE1MX0.C3MSgtMe1UZ-gxsCKXZNDFIlIHTmYLpTyq8NX8MkfAM';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Check if user is already authenticated when page loads
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log("User already authenticated on page load:", user.email);
-                // For Google users, email is already verified
-                // For email/password users, check email verification
-                if (user.providerData.length > 0 && user.providerData[0].providerId === 'google.com') {
-                    // Google user - no email verification needed
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirectUrl = urlParams.get('redirect');
-                    if (redirectUrl) {
-                        window.location.replace(decodeURIComponent(redirectUrl));
-                    } else {
-                        window.location.replace("/dashboard.html");
-                    }
-                } else if (user.emailVerified) {
-                    // Email/password user with verified email
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirectUrl = urlParams.get('redirect');
-                    if (redirectUrl) {
-                        window.location.replace(decodeURIComponent(redirectUrl));
-                    } else {
-                        window.location.replace("/dashboard.html");
-                    }
-                } else {
-                    // Email/password user with unverified email
-                    console.log("Email not verified for:", user.email);
-                }
-            } else {
-                console.log("No user authenticated on page load");
-            }
-        });
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5iCxiWXEAiUSQAO6uBvG6bL4udqWIlNg",
+      authDomain: "practiso-9b3dd.firebaseapp.com",
+      projectId: "practiso-9b3dd",
+      storageBucket: "practiso-9b3dd.firebasestorage.app",
+      messagingSenderId: "263842850217",
+      appId: "1:263842850217:web:129de6a752bd8831b150b8",
+      measurementId: "G-CG44V5WG0G"
+    };
 
-        // Handle redirect result for mobile Google sign-in
-        auth.getRedirectResult().then((result) => {
-            if (result && result.user) {
-                // User successfully signed in via redirect
-                console.log("Redirect result successful:", result.user.email);
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirectUrl = urlParams.get('redirect');
-                if (redirectUrl) {
-                    window.location.replace(decodeURIComponent(redirectUrl));
-                } else {
-                    window.location.replace("/dashboard.html");
-                }
-            }
-        }).catch((error) => {
-            // Handle redirect errors
-            console.error("Redirect error:", error);
-            if (error.code === 'auth/account-exists-with-different-credential') {
-                alert("An account already exists with the same email address but different sign-in credentials.");
-            } else if (error.code === 'auth/invalid-credential') {
-                alert("The sign-in method is not available. Please try again.");
-            } else {
-                console.error("Redirect error:", error);
-            }
-        });
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-        function showForm(form) {
-            ['login', 'signup'].forEach(f => {
-                document.getElementById(`${f}-form`).classList.remove('active');
-            });
-            document.getElementById(`${form}-form`).classList.add('active');
-            document.getElementById('login-tab').classList.toggle('active', form === 'login');
-            document.getElementById('signup-tab').classList.toggle('active', form === 'signup');
-        }
+    // -------- Email/Password logic (Firebase) -------- //
+    function handleEmailSignup() {
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
 
-        function handleEmailSignup() {
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-                .then(() => {
-                    return auth.createUserWithEmailAndPassword(email, password)
-                })
-                .then((userCredential) => {
-                    return userCredential.user.sendEmailVerification().then(() => {
-                        alert("Verification email sent! Please check your inbox.");
-                        showForm('login');
-                        return auth.signOut();
-                    });
-                })
-                .catch((error) => {
-                    alert(getFriendlyError(error));
-                });
-        }
-
-        function handleEmailLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-
-    if (!email) {
-        alert("Please enter your email first.");
-        return;
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => auth.createUserWithEmailAndPassword(email, password))
+        .then(userCredential => {
+          return userCredential.user.sendEmailVerification().then(() => {
+            alert("Verification email sent!");
+            showForm("login");
+            return auth.signOut();
+          });
+        })
+        .catch(error => alert(error.message));
     }
 
-    if (!password) {
-        alert("Please enter your password.");
-        return;
-    }
+    function handleEmailLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
 
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => {
-            return auth.signInWithEmailAndPassword(email, password);
-        })
-        .then((userCredential) => {
-            return userCredential.user.reload().then(() => userCredential.user);
-        })
-        .then((user) => {
-            if (!user.emailVerified) {
-                alert("Please verify your email first.");
-                auth.signOut();
-                throw new Error("Email not verified");
-            }
-            const urlParams = new URLSearchParams(window.location.search);
-            const redirectUrl = urlParams.get('redirect');
-            if (redirectUrl) {
-                window.location.replace(decodeURIComponent(redirectUrl));
-            } else {
-                window.location.replace("/dashboard.html");
-            }
-        })
-        .catch((error) => {
-            if (error.message !== "Email not verified") {
-                alert(getFriendlyError(error));
-            }
-        });
-}
-
-
-function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    
-    // Check if it's a mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    console.log("Signing in with Google, isMobile:", isMobile);
-    
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => {
-        if (isMobile) {
-          // Use redirect for mobile devices
-          console.log("Using redirect method for mobile");
-          return auth.signInWithRedirect(provider);
-        } else {
-          // Use popup for desktop devices
-          console.log("Using popup method for desktop");
-          return auth.signInWithPopup(provider);
-        }
-      })
-      .then((result) => {
-        // This will only execute for popup method (desktop)
-        if (result) {
-          console.log("Popup sign-in successful:", result.user.email);
-          const urlParams = new URLSearchParams(window.location.search);
-          const redirectUrl = urlParams.get('redirect');
-          if (redirectUrl) {
-              window.location.replace(decodeURIComponent(redirectUrl));
-          } else {
-              window.location.replace("/dashboard.html");
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => auth.signInWithEmailAndPassword(email, password))
+        .then(userCredential => userCredential.user.reload().then(() => userCredential.user))
+        .then(user => {
+          if (!user.emailVerified) {
+            alert("Please verify your email first.");
+            auth.signOut();
+            throw new Error("Email not verified");
           }
-        }
-      })
-      .catch((error) => {
-        console.error("Google sign-in error:", error);
-        if (error.code === 'auth/popup-closed-by-user') {
-            alert("You closed the popup before completing sign-in. Please try again.");
-        } else {
-            alert(getFriendlyError(error));
+          const redirectUrl = new URLSearchParams(window.location.search).get("redirect");
+          window.location.replace(redirectUrl || "/dashboard.html");
+        })
+        .catch(error => alert(error.message));
+    }
+
+    // -------- Supabase Google Sign-In -------- //
+    async function signInWithGoogle() {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + "/login.html"
         }
       });
-}
+      if (error) alert("Google login failed: " + error.message);
+    }
 
+    async function checkSupabaseSession() {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (session && session.user) {
+        console.log("✅ Supabase Google login success:", session.user.email);
+        const redirectUrl = new URLSearchParams(window.location.search).get("redirect");
+        window.location.replace(redirectUrl || "/dashboard.html");
+      }
+    }
 
+    // -------- Events -------- //
+    document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
+    document.getElementById('googleSignupBtn').addEventListener('click', signInWithGoogle);
 
-        document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
-        document.getElementById('googleSignupBtn').addEventListener('click', signInWithGoogle);
+    function showForm(form) {
+      ['login', 'signup'].forEach(f => {
+        document.getElementById(`${f}-form`).classList.remove('active');
+      });
+      document.getElementById(`${form}-form`).classList.add('active');
+      document.getElementById('login-tab').classList.toggle('active', form === 'login');
+      document.getElementById('signup-tab').classList.toggle('active', form === 'signup');
+    }
 
-        function getFriendlyError(error) {
-            switch (error.code) {
-                case 'auth/email-already-in-use': return 'Email is already registered.';
-                case 'auth/user-not-found': return 'No account found with this email.';
-                case 'auth/wrong-password': return 'Incorrect password.';
-                case 'auth/invalid-email': return 'Invalid email format.';
-                default: return error.message;
-            }
+    document.addEventListener("DOMContentLoaded", () => {
+      // Firebase check (email/password auth flow)
+      auth.onAuthStateChanged(user => {
+        if (user && user.emailVerified) {
+          const redirectUrl = new URLSearchParams(window.location.search).get("redirect");
+          window.location.replace(redirectUrl || "/dashboard.html");
         }
+      });
+
+      // Supabase check (Google only)
+      checkSupabaseSession();
+    });
+
+    
+
     </script>
 </body>
 </html>
